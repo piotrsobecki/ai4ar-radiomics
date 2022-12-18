@@ -4,3 +4,5 @@ matplotlib
 numpy
 ghp-import
 plotly
+pandas
+sharepy
