@@ -395,6 +395,87 @@ title="Print to PDF"
 </ul>
 <p>In selecting appropriate data visualization methods, we will consider the type of data (categorical or continuous), the number of variables being plotted, and the intended audience.</p>
 <p>Let’s begin by importing the necessary libraries and loading the data.</p>
+<div class="cell tag_hide-input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+
+# Load json config file and extension
+with open(&#39;config/config.json&#39;) as json_file:
+    config = json.load(json_file)
+
+# Load the extension
+with open(&#39;config/config-ext.json&#39;) as json_file:
+    extension = json.load(json_file)
+    
+    
+config = {**config, **extension}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar
+
+case = ai4ar.read_case(config[&#39;data_dir&#39;], &#39;001&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ai4ar.describe(case)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>anatomical_labels/afs (35, 320, 320)
+anatomical_labels/cz (35, 320, 320)
+anatomical_labels/pg (35, 320, 320)
+anatomical_labels/pz (35, 320, 320)
+anatomical_labels/sv_l (35, 320, 320)
+anatomical_labels/sv_r (35, 320, 320)
+anatomical_labels/tz (35, 320, 320)
+data/adc (35, 140, 162)
+data/cor (36, 320, 320)
+data/hbv (35, 140, 162)
+data/sag (31, 320, 320)
+data/t2w (35, 320, 320)
+data/dce1 (88, 224, 312)
+data/dce2 (88, 224, 312)
+data/dce3 (88, 224, 312)
+data/dce4 (88, 224, 312)
+data/dce5 (88, 224, 312)
+data/dce6 (88, 224, 312)
+lesion_labels/lesion1/adc/8ZmM76 (35, 140, 162)
+lesion_labels/lesion1/adc/OjmNZ8 (35, 140, 162)
+lesion_labels/lesion1/adc/OrjnrO (35, 140, 162)
+lesion_labels/lesion1/hbv/8ZmM76 (35, 140, 162)
+lesion_labels/lesion1/hbv/OjmNZ8 (35, 140, 162)
+lesion_labels/lesion1/hbv/OrjnrO (35, 140, 162)
+lesion_labels/lesion1/t2w/8ZmM76 (35, 320, 320)
+lesion_labels/lesion1/t2w/OjmNZ8 (35, 320, 320)
+lesion_labels/lesion1/t2w/OrjnrO (35, 320, 320)
+lesion_labels/lesion1/dce3/OrjnrO (88, 224, 312)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ai4ar.visualize_case(case)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/data_5_0.png" src="../_images/data_5_0.png" />
+<img alt="../_images/data_5_1.png" src="../_images/data_5_1.png" />
+<img alt="../_images/data_5_2.png" src="../_images/data_5_2.png" />
+<img alt="../_images/data_5_3.png" src="../_images/data_5_3.png" />
+<img alt="../_images/data_5_4.png" src="../_images/data_5_4.png" />
+<img alt="../_images/data_5_5.png" src="../_images/data_5_5.png" />
+</div>
+</div>
 </section>
 
     <script type="text/x-thebe-config">
