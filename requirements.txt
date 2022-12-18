@@ -5,4 +5,7 @@ numpy
 ghp-import
 plotly
 pandas
-sharepy
+SimpleITK
+numpy
+matplotlib
+-e git+https://github.com/piotrsobecki/ai4ar-helper.git@30c56e54edbc25651dccc61e9267c7b2756c9649#egg=ai4ar
