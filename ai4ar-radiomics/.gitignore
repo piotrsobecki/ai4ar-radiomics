@@ -114,3 +114,8 @@ ENV/
 
 # IDE settings
 .vscode/
+
+
+data/*
+
+*-env/

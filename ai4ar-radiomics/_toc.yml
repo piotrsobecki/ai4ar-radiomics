@@ -4,8 +4,11 @@
 format: jb-book
 root: index
 chapters:
-  - file: book/markdown
-  - file: book/notebooks
+  - file: book/methods
+  - file: book/data
+  - file: book/predictive_models_imaging_features
+  - file: book/predictive_models
+  - file: book/predictive_models_factors
   - file: book/bibliography
 
 # Or you organize the TOC by parts
