@@ -358,12 +358,63 @@ title="Print to PDF"
     </ul>
   </div>
 </div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
 
     </div>
 </div>
 
 <!-- Table of contents -->
 <div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Data visualisation
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ai4ar-helper-package">
+   AI4AR Helper package
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-data-for-the-single-case">
+     Visualize data for the single case
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualize-single-image">
+   Visualize single image
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#combine-lesion-mask">
+   Combine lesion mask
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualize-all-images">
+   Visualize all images
+  </a>
+ </li>
+</ul>
+
+    </nav>
 </div>
     </div>
     <div class="article row">
@@ -375,6 +426,46 @@ title="Print to PDF"
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#">
+   Data visualisation
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ai4ar-helper-package">
+   AI4AR Helper package
+  </a>
+  <ul class="visible nav section-nav flex-column">
+   <li class="toc-h2 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#visualize-data-for-the-single-case">
+     Visualize data for the single case
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualize-single-image">
+   Visualize single image
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#combine-lesion-mask">
+   Combine lesion mask
+  </a>
+ </li>
+ <li class="toc-h1 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#visualize-all-images">
+   Visualize all images
+  </a>
+ </li>
+</ul>
+
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -395,9 +486,10 @@ title="Print to PDF"
 </ul>
 <p>In selecting appropriate data visualization methods, we will consider the type of data (categorical or continuous), the number of variables being plotted, and the intended audience.</p>
 <p>Let’s begin by importing the necessary libraries and loading the data.</p>
-<div class="cell tag_hide-input docutils container">
+<div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import json
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>%cd ..
+import json
 
 # Load json config file and extension
 with open(&#39;config/config.json&#39;) as json_file:
@@ -412,68 +504,142 @@ config = {**config, **extension}
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>d:\workspace\ai4ar-radiomics
+</pre></div>
 </div>
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="ai4ar-helper-package">
+<h1>AI4AR Helper package<a class="headerlink" href="#ai4ar-helper-package" title="Permalink to this headline">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar
+</pre></div>
+</div>
+</div>
+</div>
+<section id="visualize-data-for-the-single-case">
+<h2>Visualize data for the single case<a class="headerlink" href="#visualize-data-for-the-single-case" title="Permalink to this headline">#</a></h2>
+<p>On DataSet init, the images are not loaded</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset = ai4ar.Dataset(config[&#39;data_dir&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset.case_ids
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;001&#39;, &#39;003&#39;, &#39;004&#39;, &#39;005&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case = dataset[&#39;001&#39;]
+case.summarize() # All images for the case
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image: anatomical_labels/afs
+Image: anatomical_labels/cz
+Image: anatomical_labels/pg
+Image: anatomical_labels/pz
+Image: anatomical_labels/sv_l
+Image: anatomical_labels/sv_r
+Image: anatomical_labels/tz
+Image: data/adc
+Image: data/cor
+Image: data/dce1
+Image: data/dce2
+Image: data/dce3
+Image: data/dce4
+Image: data/dce5
+Image: data/dce6
+Image: data/hbv
+Image: data/sag
+Image: data/t2w
+Image: lesion_labels/lesion1/adc/8ZmM76
+Image: lesion_labels/lesion1/adc/OjmNZ8
+Image: lesion_labels/lesion1/adc/OrjnrO
+Image: lesion_labels/lesion1/dce3/OrjnrO
+Image: lesion_labels/lesion1/hbv/8ZmM76
+Image: lesion_labels/lesion1/hbv/OjmNZ8
+Image: lesion_labels/lesion1/hbv/OrjnrO
+Image: lesion_labels/lesion1/t2w/8ZmM76
+Image: lesion_labels/lesion1/t2w/OjmNZ8
+Image: lesion_labels/lesion1/t2w/OrjnrO
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="visualize-single-image">
+<h1>Visualize single image<a class="headerlink" href="#visualize-single-image" title="Permalink to this headline">#</a></h1>
+<p>Images are cached after first access</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
 
-case = ai4ar.read_case(config[&#39;data_dir&#39;], &#39;001&#39;)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ai4ar.describe(case)
+image = case.image(&#39;data/t2w&#39;)
+
+# Visualize the combined mask
+plt.imshow(image[ai4ar.select_slice(image)], cmap=&#39;gray&#39;)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>anatomical_labels/afs (35, 320, 320)
-anatomical_labels/cz (35, 320, 320)
-anatomical_labels/pg (35, 320, 320)
-anatomical_labels/pz (35, 320, 320)
-anatomical_labels/sv_l (35, 320, 320)
-anatomical_labels/sv_r (35, 320, 320)
-anatomical_labels/tz (35, 320, 320)
-data/adc (35, 140, 162)
-data/cor (36, 320, 320)
-data/hbv (35, 140, 162)
-data/sag (31, 320, 320)
-data/t2w (35, 320, 320)
-data/dce1 (88, 224, 312)
-data/dce2 (88, 224, 312)
-data/dce3 (88, 224, 312)
-data/dce4 (88, 224, 312)
-data/dce5 (88, 224, 312)
-data/dce6 (88, 224, 312)
-lesion_labels/lesion1/adc/8ZmM76 (35, 140, 162)
-lesion_labels/lesion1/adc/OjmNZ8 (35, 140, 162)
-lesion_labels/lesion1/adc/OrjnrO (35, 140, 162)
-lesion_labels/lesion1/hbv/8ZmM76 (35, 140, 162)
-lesion_labels/lesion1/hbv/OjmNZ8 (35, 140, 162)
-lesion_labels/lesion1/hbv/OrjnrO (35, 140, 162)
-lesion_labels/lesion1/t2w/8ZmM76 (35, 320, 320)
-lesion_labels/lesion1/t2w/OjmNZ8 (35, 320, 320)
-lesion_labels/lesion1/t2w/OrjnrO (35, 320, 320)
-lesion_labels/lesion1/dce3/OrjnrO (88, 224, 312)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x195603aeb50&gt;
 </pre></div>
 </div>
+<img alt="../_images/data_9_1.png" src="../_images/data_9_1.png" />
 </div>
 </div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="combine-lesion-mask">
+<h1>Combine lesion mask<a class="headerlink" href="#combine-lesion-mask" title="Permalink to this headline">#</a></h1>
+<p>Sum all annotations for lesion1 on t2w image. It’s the same for other modalities</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>ai4ar.visualize_case(case)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+
+combined_t2w_mask = case.image(&#39;lesion_labels/lesion1/t2w&#39;, combine=True)
+
+# Visualize the combined mask
+plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;gray&#39;)
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/data_5_0.png" src="../_images/data_5_0.png" />
-<img alt="../_images/data_5_1.png" src="../_images/data_5_1.png" />
-<img alt="../_images/data_5_2.png" src="../_images/data_5_2.png" />
-<img alt="../_images/data_5_3.png" src="../_images/data_5_3.png" />
-<img alt="../_images/data_5_4.png" src="../_images/data_5_4.png" />
-<img alt="../_images/data_5_5.png" src="../_images/data_5_5.png" />
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.image.AxesImage at 0x195604038e0&gt;
+</pre></div>
+</div>
+<img alt="../_images/data_11_1.png" src="../_images/data_11_1.png" />
+</div>
+</div>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="visualize-all-images">
+<h1>Visualize all images<a class="headerlink" href="#visualize-all-images" title="Permalink to this headline">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case.visualize()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/data_13_0.png" src="../_images/data_13_0.png" />
+<img alt="../_images/data_13_1.png" src="../_images/data_13_1.png" />
+<img alt="../_images/data_13_2.png" src="../_images/data_13_2.png" />
 </div>
 </div>
 </section>
