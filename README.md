@@ -2,7 +2,47 @@
 
 AI4AR Prostate Cancer data visualization and radiomics analyses
 
+
+## Project
+
+This project structure is explained in: https://www.youtube.com/watch?v=seKOq-VMJgY&list=PLr752TWTU4tu-aq_rH5KuYrnvPuueW0Wy
+
+
+## Requirements
+
+Python 3.7.15 (pyradiomics)
+ https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+ 
 ## Usage
+
+### Creating an env
+
+To create a Python virtual environment with the name ```ai4ar-radiomics-env```, you can use the following instructions:
+
+Make sure that you have the ```virtualenv``` package installed on your system. You can install it using ```pip install virtualenv```.
+
+Open a terminal and navigate to the directory where you want to create the virtual environment.
+
+Run the following command to create the virtual environment:
+```bash
+virtualenv ai4ar-radiomics-env
+```
+
+To activate the virtual environment, use the following command:
+
+```bash
+source ai4ar-radiomics-env/bin/activate
+```
+
+You should now see the name of your virtual environment in the terminal prompt, indicating that it is active.
+
+To deactivate the virtual environment, use the following command:
+```bash
+deactivate
+```
+
+https://docs.python.org/3/library/venv.html
 
 ### Building the book
 
@@ -32,12 +72,59 @@ This project is created using the excellent open source [Jupyter Book project](h
 
 
 
-## Requirements
+## Data (example for subset of the raw dataset)
+
+### Data Source
+
+https://ai4ar.opi.org.pl/baza-obrazow-mpmri/#
 
 
-Python 3.7.15 (pyradiomics)
+Follow the instructions on the site. Download the CONT data, unzip uzing 7zip, place into the data directory (ie. ./data/raw), unzip.
+
+Place the metadata (.csv files) in the directory (ex. ./data/raw)
+
+The directory structure should reflect following:
+
+### (Example) Directory structure
+
+./data/trial/AI4AR_cont\Anatomical_Labels\001
+./data/trial/AI4AR_cont\Anatomical_Labels\003
+./data/trial/AI4AR_cont\Anatomical_Labels\004
+./data/trial/AI4AR_cont\Anatomical_Labels\005
+./data/trial/AI4AR_cont\Data\001
+./data/trial/AI4AR_cont\Data\003
+./data/trial/AI4AR_cont\Data\004
+./data/trial/AI4AR_cont\Data\005
+./data/trial/AI4AR_cont\Lesion_Labels\001\lesion1\adc
+./data/trial/AI4AR_cont\Lesion_Labels\001\lesion1\dce3
+./data/trial/AI4AR_cont\Lesion_Labels\001\lesion1\hbv
+./data/trial/AI4AR_cont\Lesion_Labels\001\lesion1\t2w
+./data/trial/AI4AR_cont\Lesion_Labels\001\lesion1
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion1\adc
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion1\dce3
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion1\hbv
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion1\t2w
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion2\adc
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion2\dce3
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion2\hbv
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion2\t2w
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion1
+./data/trial/AI4AR_cont\Lesion_Labels\003\lesion2
+./data/trial/AI4AR_cont\Lesion_Labels\004\lesion1\adc
+./data/trial/AI4AR_cont\Lesion_Labels\004\lesion1\dce3
+./data/trial/AI4AR_cont\Lesion_Labels\004\lesion1\hbv
+./data/trial/AI4AR_cont\Lesion_Labels\004\lesion1\t2w
+./data/trial/AI4AR_cont\Lesion_Labels\004\lesion1
+./data/trial/AI4AR_cont\Lesion_Labels\001
+./data/trial/AI4AR_cont\Lesion_Labels\003
+./data/trial/AI4AR_cont\Lesion_Labels\004
+./data/trial/AI4AR_cont\Lesion_Labels\005
+./data/trial/AI4AR_cont\Anatomical_Labels
+./data/trial/AI4AR_cont\Data
+./data/trial/AI4AR_cont\Lesion_Labels
+./data/trial/AI4AR_cont
+
+./data/trial/AI4A4_PCa_clinical.csv
+./data/trial/AI4AR_PCa_radiological.csv
 
 
- https://visualstudio.microsoft.com/visual-cpp-build-tools/
-
- 
