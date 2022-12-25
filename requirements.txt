@@ -1,17 +1,4 @@
 jupyter-book
 jupytext
-matplotlib
-numpy==1.20.3
 ghp-import
-plotly
-pandas
-SimpleITK
 matplotlib
-python-benedict==0.27.1
--e git+https://github.com/piotrsobecki/ai4ar-helper.git#egg=ai4ar
-pyradiomics
-scikit-image
-scipy==1.5.4
-trimesh
-joblib==1.2.0
-pycaret==2.3.10

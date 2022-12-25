@@ -49,7 +49,7 @@ https://docs.python.org/3/library/venv.html
 If you'd like to develop and/or build the AI4AR Radiomics book, you should:
 
 1. Clone this repository
-2. Run `pip install -r requirements.txt` (it is recommended you do this within a virtual environment)
+2. Run `pip install -r requirements.txt` (it is recommended you do this within a virtual environment) and Run `pip install -r requirements-ext.txt`
 3. (Optional) Edit the books source files located in the `ai4ar-radiomics/` directory
 4. Run `jupyter-book clean ai4ar-radiomics/` to remove any existing builds
 5. Run `jupyter-book build ai4ar-radiomics/`
