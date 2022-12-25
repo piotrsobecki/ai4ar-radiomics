@@ -29,3 +29,15 @@ We welcome and recognize all contributions. You can see a list of current contri
 ## Credits
 
 This project is created using the excellent open source [Jupyter Book project](https://jupyterbook.org/) and the [executablebooks/cookiecutter-jupyter-book template](https://github.com/executablebooks/cookiecutter-jupyter-book).
+
+
+
+## Requirements
+
+
+Python 3.7.15 (pyradiomics)
+
+
+ https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+ 
