@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Predictive models for clinical significance &#8212; AI4AR Radiomics</title>
+    <title>AutoML Predictive models for clinical significance / PI-RADS &#8212; AI4AR Radiomics</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -126,7 +126,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   Predictive models for clinical significance
+   AutoML Predictive models for clinical significance / PI-RADS
   </a>
  </li>
  <li class="toctree-l1">
@@ -358,23 +358,70 @@ title="Print to PDF"
     </ul>
   </div>
 </div>
+<label for="__page-toc"
+  class="headerbtn headerbtn-page-toc"
+  
+>
+  
+
+<span class="headerbtn__icon-container">
+  <i class="fas fa-list"></i>
+  </span>
+
+</label>
 
     </div>
 </div>
 
 <!-- Table of contents -->
 <div class="col-md-3 bd-toc show noprint">
+    <div class="tocsection onthispage pt-5 pb-3">
+        <i class="fas fa-list"></i> Contents
+    </div>
+    <nav id="bd-toc-nav" aria-label="Page">
+        <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dce-pirads">
+   DCE - PIRADS
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dwi-hbv-adc-pirads">
+   DWI (HBV) / ADC - PIRADS
+  </a>
+ </li>
+</ul>
+
+    </nav>
 </div>
     </div>
     <div class="article row">
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Predictive models for clinical significance</h1>
+                <h1>AutoML Predictive models for clinical significance / PI-RADS</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
                         
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dce-pirads">
+   DCE - PIRADS
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dwi-hbv-adc-pirads">
+   DWI (HBV) / ADC - PIRADS
+  </a>
+ </li>
+</ul>
+
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -382,12 +429,2671 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="predictive-models-for-clinical-significance">
-<h1>Predictive models for clinical significance<a class="headerlink" href="#predictive-models-for-clinical-significance" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="automl-predictive-models-for-clinical-significance-pi-rads">
+<h1>AutoML Predictive models for clinical significance / PI-RADS<a class="headerlink" href="#automl-predictive-models-for-clinical-significance-pi-rads" title="Permalink to this headline">#</a></h1>
 <p>We will be exploring the use of radiomics for predicting the clinical significance of prostate lesions on mpMRI images.</p>
 <p>Our data consists of mpMRI images and annotations prepared by three radiologists, as well as clinical information and biopsy results with International Society of Urological Pathology (ISUP) Gleason grading for each lesion. The radiologists annotated the data with multiple imaging features for each lesion, using the assessment algorithm from the PI-RADS standard.</p>
-<p>To verify the hypotheses, we will be using a supervised learning algorithm to train a model on the mpMRI images and the biopsy results. We will extract the radiomics features using a dedicated library that calculates features based on the intensity, texture, and shape of the lesions. We will then use cross-validation to assess the performance of the model, and visualize the results using a receiver operating characteristic (ROC) curve.</p>
+<p>To verify the hypotheses, we will be using a supervised learning algorithm to train a model on the mpMRI images and the biopsy results. We use extracted radiomics features and use cross-validation to assess the performance of the model, and visualize the results using a receiver operating characteristic (ROC) curve.</p>
+<p>Interesting targets:</p>
+<p>Clinical Significance
+‘TBx’</p>
+<p>PI-RADS values:
+‘lesion_t2w_pz’,
+‘lesion_t2w_tz’,
+‘lesion_dwi’,
+‘lesion_dce’,
+‘lesion_pirads’,
+‘patient_pirads’,
+‘lesion_t2w_pz_cat’,
+‘lesion_t2w_tz_cat’,
+‘lesion_dwi_cat’</p>
 <p>Let’s begin by importing the necessary libraries and loading the data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#!pip install --no-cache-dir pycaret
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
+
+import pandas as pd # For saving the features
+from pycaret.classification import *
+
+
+import sys 
+import os 
+from config import config # For reading the config files
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Setup the notebook
+%load_ext autoreload
+%autoreload 2
+
+# Add src to path
+
+if os.path.basename(os.getcwd()) != &#39;ai4ar-radiomics&#39;:
+    os.chdir(&#39;..&#39;)
+
+if &#39;src&#39; not in sys.path:
+    sys.path.append(&#39;src&#39;)
+
+cfg = config(
+    (&#39;json&#39;, &#39;config/config.json&#39;, True),
+    (&#39;json&#39;, &#39;config/config-ext.json&#39;, True),
+    ignore_missing_paths = True
+)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load the dataset
+dataset = ai4ar.Dataset(cfg[&#39;data_dir&#39;])
+
+# Add T2W pirads category
+dataset.radiological_metadata[&#39;lesion_t2w_cat&#39;] = dataset.radiological_metadata[&#39;lesion_t2w_pz_cat&#39;].fillna(&#39;&#39;) + dataset.radiological_metadata[&#39;lesion_t2w_tz_cat&#39;].fillna(&#39;&#39;)
+dataset.radiological_metadata[&#39;lesion_t2w&#39;] = dataset.radiological_metadata[&#39;lesion_t2w_pz&#39;].fillna(0) + dataset.radiological_metadata[&#39;lesion_t2w_tz&#39;].fillna(0)
+
+# Load the extracted radiomics features
+t2w_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;))
+# Load the extracted radiomics features
+adc_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_adc.csv&#39;))
+# Load the extracted radiomics features
+hbv_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_hbv.csv&#39;))
+# Load the extracted radiomics features
+dce_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_dce3.csv&#39;))
+
+# IDX columns
+idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+dataset.radiological_metadata.head(5)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>patient_id</th>
+      <th>radiologist_id</th>
+      <th>lesion_id</th>
+      <th>TBx</th>
+      <th>dimension</th>
+      <th>lesion_dim_sequence</th>
+      <th>lesion_sectors</th>
+      <th>lesion_sectors_simple</th>
+      <th>lesion_zones</th>
+      <th>lesion_originating</th>
+      <th>lesion_side</th>
+      <th>lesion_t2w_pz</th>
+      <th>lesion_t2w_tz</th>
+      <th>lesion_dwi</th>
+      <th>lesion_dce</th>
+      <th>lesion_pirads</th>
+      <th>patient_pirads</th>
+      <th>lesion_t2w_pz_cat</th>
+      <th>lesion_t2w_tz_cat</th>
+      <th>lesion_dwi_cat</th>
+      <th>label_adc</th>
+      <th>label_cor</th>
+      <th>label_hbv</th>
+      <th>label_sag</th>
+      <th>label_t2w</th>
+      <th>label_dce1</th>
+      <th>label_dce2</th>
+      <th>label_dce3</th>
+      <th>label_dce4</th>
+      <th>label_dce5</th>
+      <th>label_dce6</th>
+      <th>lesion_t2w_cat</th>
+      <th>lesion_t2w</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>U_OjmNZ8</td>
+      <td>1</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>T2W</td>
+      <td>AS-left-in-mid,TZa-left-in-mid</td>
+      <td>AS,TZa</td>
+      <td>AS,TZ</td>
+      <td>TZ</td>
+      <td>LEFT</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5b</td>
+      <td>5a</td>
+      <td>lesion_labels/lesion1/adc/OjmNZ8</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/OjmNZ8</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/OjmNZ8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5b</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>1</td>
+      <td>0</td>
+      <td>29.0</td>
+      <td>T2W</td>
+      <td>AS-right-in-base,TZa-right-in-base,AS-left-in-...</td>
+      <td>AS,TZa</td>
+      <td>AS,TZ</td>
+      <td>TZ</td>
+      <td>RIGHT LEFT</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5a</td>
+      <td>lesion_labels/lesion1/adc/8ZmM76</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/8ZmM76</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>U_OrjnrO</td>
+      <td>1</td>
+      <td>0</td>
+      <td>31.0</td>
+      <td>T2W</td>
+      <td>AS-left-in-apex,AS-left-in-mid,AS-right-in-mid...</td>
+      <td>AS</td>
+      <td>AS</td>
+      <td>TZ</td>
+      <td>LEFT RIGHT</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>0.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5b</td>
+      <td>5a</td>
+      <td>lesion_labels/lesion1/adc/OrjnrO</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/OrjnrO</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/OrjnrO</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/dce3/OrjnrO</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5b</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>U_8ekGLQ</td>
+      <td>1</td>
+      <td>1</td>
+      <td>18.0</td>
+      <td>ADC</td>
+      <td>AS-left-in-base,TZa-left-in-base,TZa-left-in-mid</td>
+      <td>AS,TZa</td>
+      <td>AS,TZ</td>
+      <td>TZ</td>
+      <td>LEFT</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5a</td>
+      <td>lesion_labels/lesion1/adc/8ekGLQ</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/8ekGLQ</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3</td>
+      <td>U_OjmNZ8</td>
+      <td>1</td>
+      <td>1</td>
+      <td>15.0</td>
+      <td>ADC</td>
+      <td>TZa-left-in-base,TZa-left-in-mid,AS-left-in-base</td>
+      <td>TZa,AS</td>
+      <td>TZ,AS</td>
+      <td>TZ</td>
+      <td>LEFT</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>5.0</td>
+      <td>5.0</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5a</td>
+      <td>lesion_labels/lesion1/adc/OjmNZ8</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/OjmNZ8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/dce3/OjmNZ8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5a</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset.radiological_metadata.columns
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Index([&#39;patient_id&#39;, &#39;radiologist_id&#39;, &#39;lesion_id&#39;, &#39;TBx&#39;, &#39;dimension&#39;,
+       &#39;lesion_dim_sequence&#39;, &#39;lesion_sectors&#39;, &#39;lesion_sectors_simple&#39;,
+       &#39;lesion_zones&#39;, &#39;lesion_originating&#39;, &#39;lesion_side&#39;, &#39;lesion_t2w_pz&#39;,
+       &#39;lesion_t2w_tz&#39;, &#39;lesion_dwi&#39;, &#39;lesion_dce&#39;, &#39;lesion_pirads&#39;,
+       &#39;patient_pirads&#39;, &#39;lesion_t2w_pz_cat&#39;, &#39;lesion_t2w_tz_cat&#39;,
+       &#39;lesion_dwi_cat&#39;, &#39;label_adc&#39;, &#39;label_cor&#39;, &#39;label_hbv&#39;, &#39;label_sag&#39;,
+       &#39;label_t2w&#39;, &#39;label_dce1&#39;, &#39;label_dce2&#39;, &#39;label_dce3&#39;, &#39;label_dce4&#39;,
+       &#39;label_dce5&#39;, &#39;label_dce6&#39;, &#39;lesion_t2w_cat&#39;, &#39;lesion_t2w&#39;],
+      dtype=&#39;object&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t2w_features.head()
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>patient_id</th>
+      <th>lesion_id</th>
+      <th>radiologist_id</th>
+      <th>mask_path</th>
+      <th>data_path</th>
+      <th>original_firstorder_10Percentile</th>
+      <th>original_firstorder_90Percentile</th>
+      <th>original_firstorder_Energy</th>
+      <th>original_firstorder_Entropy</th>
+      <th>original_firstorder_InterquartileRange</th>
+      <th>original_firstorder_Kurtosis</th>
+      <th>original_firstorder_Maximum</th>
+      <th>original_firstorder_MeanAbsoluteDeviation</th>
+      <th>original_firstorder_Mean</th>
+      <th>original_firstorder_Median</th>
+      <th>original_firstorder_Minimum</th>
+      <th>original_firstorder_Range</th>
+      <th>original_firstorder_RobustMeanAbsoluteDeviation</th>
+      <th>original_firstorder_RootMeanSquared</th>
+      <th>original_firstorder_Skewness</th>
+      <th>original_firstorder_TotalEnergy</th>
+      <th>original_firstorder_Uniformity</th>
+      <th>original_firstorder_Variance</th>
+      <th>original_glcm_Autocorrelation</th>
+      <th>original_glcm_ClusterProminence</th>
+      <th>original_glcm_ClusterShade</th>
+      <th>original_glcm_ClusterTendency</th>
+      <th>original_glcm_Contrast</th>
+      <th>original_glcm_Correlation</th>
+      <th>original_glcm_DifferenceAverage</th>
+      <th>original_glcm_DifferenceEntropy</th>
+      <th>original_glcm_DifferenceVariance</th>
+      <th>original_glcm_Id</th>
+      <th>original_glcm_Idm</th>
+      <th>original_glcm_Idmn</th>
+      <th>original_glcm_Idn</th>
+      <th>original_glcm_Imc1</th>
+      <th>original_glcm_Imc2</th>
+      <th>original_glcm_InverseVariance</th>
+      <th>original_glcm_JointAverage</th>
+      <th>original_glcm_JointEnergy</th>
+      <th>original_glcm_JointEntropy</th>
+      <th>original_glcm_MCC</th>
+      <th>original_glcm_MaximumProbability</th>
+      <th>original_glcm_SumAverage</th>
+      <th>original_glcm_SumEntropy</th>
+      <th>original_glcm_SumSquares</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_OjmNZ8</td>
+      <td>lesion_labels/lesion1/t2w/OjmNZ8</td>
+      <td>data/t2w</td>
+      <td>95.0</td>
+      <td>159.0</td>
+      <td>3410783.0</td>
+      <td>2.248859</td>
+      <td>32.00</td>
+      <td>5.322890</td>
+      <td>227.0</td>
+      <td>21.785000</td>
+      <td>127.145000</td>
+      <td>127.5</td>
+      <td>6.0</td>
+      <td>221.0</td>
+      <td>14.030864</td>
+      <td>130.590639</td>
+      <td>-0.370589</td>
+      <td>1.082524e+07</td>
+      <td>0.264900</td>
+      <td>888.063975</td>
+      <td>32.293005</td>
+      <td>35.776776</td>
+      <td>-0.187163</td>
+      <td>2.797860</td>
+      <td>2.351875</td>
+      <td>0.086186</td>
+      <td>1.079460</td>
+      <td>1.904280</td>
+      <td>1.179326</td>
+      <td>0.609136</td>
+      <td>0.574963</td>
+      <td>0.978653</td>
+      <td>0.910431</td>
+      <td>-0.084887</td>
+      <td>0.549885</td>
+      <td>0.475830</td>
+      <td>5.672836</td>
+      <td>0.084822</td>
+      <td>4.116675</td>
+      <td>0.442936</td>
+      <td>0.147789</td>
+      <td>11.345671</td>
+      <td>2.699190</td>
+      <td>1.287434</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>data/t2w</td>
+      <td>83.0</td>
+      <td>161.0</td>
+      <td>18951780.0</td>
+      <td>2.436913</td>
+      <td>40.00</td>
+      <td>4.546336</td>
+      <td>270.0</td>
+      <td>25.262647</td>
+      <td>123.428818</td>
+      <td>126.0</td>
+      <td>0.0</td>
+      <td>270.0</td>
+      <td>16.605125</td>
+      <td>127.874305</td>
+      <td>-0.617128</td>
+      <td>6.014969e+07</td>
+      <td>0.226218</td>
+      <td>1117.164692</td>
+      <td>30.837574</td>
+      <td>48.771239</td>
+      <td>-2.971511</td>
+      <td>3.474053</td>
+      <td>2.993997</td>
+      <td>0.074468</td>
+      <td>1.300342</td>
+      <td>2.058430</td>
+      <td>1.289160</td>
+      <td>0.552497</td>
+      <td>0.504604</td>
+      <td>0.977182</td>
+      <td>0.901438</td>
+      <td>-0.033446</td>
+      <td>0.374144</td>
+      <td>0.468826</td>
+      <td>5.542182</td>
+      <td>0.060359</td>
+      <td>4.592517</td>
+      <td>0.239668</td>
+      <td>0.117783</td>
+      <td>11.084365</td>
+      <td>2.883047</td>
+      <td>1.617012</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_OrjnrO</td>
+      <td>lesion_labels/lesion1/t2w/OrjnrO</td>
+      <td>data/t2w</td>
+      <td>79.0</td>
+      <td>164.1</td>
+      <td>28481031.0</td>
+      <td>2.572456</td>
+      <td>44.00</td>
+      <td>4.571548</td>
+      <td>305.0</td>
+      <td>27.464452</td>
+      <td>123.463372</td>
+      <td>125.0</td>
+      <td>0.0</td>
+      <td>305.0</td>
+      <td>18.182307</td>
+      <td>128.680764</td>
+      <td>-0.125049</td>
+      <td>9.039389e+07</td>
+      <td>0.206492</td>
+      <td>1315.534705</td>
+      <td>30.357475</td>
+      <td>55.068221</td>
+      <td>-1.437511</td>
+      <td>3.881512</td>
+      <td>3.703067</td>
+      <td>0.025536</td>
+      <td>1.453161</td>
+      <td>2.182675</td>
+      <td>1.572226</td>
+      <td>0.526755</td>
+      <td>0.471751</td>
+      <td>0.979695</td>
+      <td>0.905787</td>
+      <td>-0.024875</td>
+      <td>0.331395</td>
+      <td>0.448691</td>
+      <td>5.505017</td>
+      <td>0.049960</td>
+      <td>4.861650</td>
+      <td>0.202465</td>
+      <td>0.104634</td>
+      <td>11.010035</td>
+      <td>2.987150</td>
+      <td>1.896145</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>data/t2w</td>
+      <td>63.0</td>
+      <td>201.0</td>
+      <td>2243638.0</td>
+      <td>3.056317</td>
+      <td>57.00</td>
+      <td>3.340976</td>
+      <td>286.0</td>
+      <td>41.261253</td>
+      <td>125.123967</td>
+      <td>115.0</td>
+      <td>8.0</td>
+      <td>278.0</td>
+      <td>27.283027</td>
+      <td>136.170712</td>
+      <td>0.634257</td>
+      <td>4.263823e+06</td>
+      <td>0.148009</td>
+      <td>2886.455707</td>
+      <td>29.189453</td>
+      <td>299.306654</td>
+      <td>16.623860</td>
+      <td>9.016457</td>
+      <td>7.338745</td>
+      <td>0.100625</td>
+      <td>2.086850</td>
+      <td>2.551521</td>
+      <td>2.949324</td>
+      <td>0.448228</td>
+      <td>0.373827</td>
+      <td>0.955844</td>
+      <td>0.863637</td>
+      <td>-0.158844</td>
+      <td>0.778955</td>
+      <td>0.369224</td>
+      <td>5.363399</td>
+      <td>0.030463</td>
+      <td>5.458917</td>
+      <td>0.482515</td>
+      <td>0.074127</td>
+      <td>10.726799</td>
+      <td>3.440320</td>
+      <td>4.088800</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3</td>
+      <td>2</td>
+      <td>U_8ekGLQ</td>
+      <td>lesion_labels/lesion2/t2w/8ekGLQ</td>
+      <td>data/t2w</td>
+      <td>26.0</td>
+      <td>153.9</td>
+      <td>5056339.0</td>
+      <td>2.897668</td>
+      <td>67.75</td>
+      <td>2.874104</td>
+      <td>289.0</td>
+      <td>38.450543</td>
+      <td>90.657676</td>
+      <td>93.0</td>
+      <td>0.0</td>
+      <td>289.0</td>
+      <td>27.531955</td>
+      <td>102.422311</td>
+      <td>0.111455</td>
+      <td>9.609097e+06</td>
+      <td>0.146270</td>
+      <td>2271.515595</td>
+      <td>16.689695</td>
+      <td>131.985389</td>
+      <td>1.423610</td>
+      <td>7.115450</td>
+      <td>7.866815</td>
+      <td>-0.018507</td>
+      <td>2.245563</td>
+      <td>2.542368</td>
+      <td>2.533083</td>
+      <td>0.419999</td>
+      <td>0.337045</td>
+      <td>0.951980</td>
+      <td>0.853524</td>
+      <td>-0.084616</td>
+      <td>0.589371</td>
+      <td>0.340918</td>
+      <td>4.101640</td>
+      <td>0.025578</td>
+      <td>5.515494</td>
+      <td>0.359564</td>
+      <td>0.050298</td>
+      <td>8.203280</td>
+      <td>3.370117</td>
+      <td>3.745566</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<section id="dce-pirads">
+<h2>DCE - PIRADS<a class="headerlink" href="#dce-pirads" title="Permalink to this headline">#</a></h2>
+<p>Predicting the DCE PI-RADS score (+/-) based on the DCE radiomic features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_dce&#39;
+
+radiomic_cols = [ col for col in dce_features.columns if &#39;original_&#39; in col]
+train = dataset.radiological_metadata.merge(dce_features, on=idx_cols, how=&#39;left&#39;)[[*radiomic_cols, target]]
+
+# Filter na 
+train = train[~train[target].isin([&#39;na&#39;,&#39;x&#39;,&#39;X&#39;])]
+train = train[~train[target].isna()]
+train[target] = train[target].astype(int)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>len(train)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1105
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clf1 = setup(
+      data = train, 
+      target = target,
+      session_id=1229,
+      normalize=True,
+      transformation=True,
+      ignore_low_variance=True,
+      feature_selection=True,
+      remove_multicollinearity=True, 
+      silent=True,  # Otherwise it will ask for input
+      multicollinearity_threshold=0.95
+)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_d03fd_row5_col1, #T_d03fd_row29_col1, #T_d03fd_row31_col1, #T_d03fd_row36_col1, #T_d03fd_row42_col1, #T_d03fd_row44_col1, #T_d03fd_row52_col1 {
+  background-color: lightgreen;
+}
+</style>
+<table id="T_d03fd_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Description</th>
+      <th class="col_heading level0 col1" >Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_d03fd_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_d03fd_row0_col0" class="data row0 col0" >session_id</td>
+      <td id="T_d03fd_row0_col1" class="data row0 col1" >1229</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_d03fd_row1_col0" class="data row1 col0" >Target</td>
+      <td id="T_d03fd_row1_col1" class="data row1 col1" >lesion_dce</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_d03fd_row2_col0" class="data row2 col0" >Target Type</td>
+      <td id="T_d03fd_row2_col1" class="data row2 col1" >Binary</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_d03fd_row3_col0" class="data row3 col0" >Label Encoded</td>
+      <td id="T_d03fd_row3_col1" class="data row3 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_d03fd_row4_col0" class="data row4 col0" >Original Data</td>
+      <td id="T_d03fd_row4_col1" class="data row4 col1" >(1105, 43)</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_d03fd_row5_col0" class="data row5 col0" >Missing Values</td>
+      <td id="T_d03fd_row5_col1" class="data row5 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_d03fd_row6_col0" class="data row6 col0" >Numeric Features</td>
+      <td id="T_d03fd_row6_col1" class="data row6 col1" >42</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_d03fd_row7_col0" class="data row7 col0" >Categorical Features</td>
+      <td id="T_d03fd_row7_col1" class="data row7 col1" >0</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_d03fd_row8_col0" class="data row8 col0" >Ordinal Features</td>
+      <td id="T_d03fd_row8_col1" class="data row8 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_d03fd_row9_col0" class="data row9 col0" >High Cardinality Features</td>
+      <td id="T_d03fd_row9_col1" class="data row9 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row10" class="row_heading level0 row10" >10</th>
+      <td id="T_d03fd_row10_col0" class="data row10 col0" >High Cardinality Method</td>
+      <td id="T_d03fd_row10_col1" class="data row10 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row11" class="row_heading level0 row11" >11</th>
+      <td id="T_d03fd_row11_col0" class="data row11 col0" >Transformed Train Set</td>
+      <td id="T_d03fd_row11_col1" class="data row11 col1" >(773, 17)</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row12" class="row_heading level0 row12" >12</th>
+      <td id="T_d03fd_row12_col0" class="data row12 col0" >Transformed Test Set</td>
+      <td id="T_d03fd_row12_col1" class="data row12 col1" >(332, 17)</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row13" class="row_heading level0 row13" >13</th>
+      <td id="T_d03fd_row13_col0" class="data row13 col0" >Shuffle Train-Test</td>
+      <td id="T_d03fd_row13_col1" class="data row13 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row14" class="row_heading level0 row14" >14</th>
+      <td id="T_d03fd_row14_col0" class="data row14 col0" >Stratify Train-Test</td>
+      <td id="T_d03fd_row14_col1" class="data row14 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row15" class="row_heading level0 row15" >15</th>
+      <td id="T_d03fd_row15_col0" class="data row15 col0" >Fold Generator</td>
+      <td id="T_d03fd_row15_col1" class="data row15 col1" >StratifiedKFold</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row16" class="row_heading level0 row16" >16</th>
+      <td id="T_d03fd_row16_col0" class="data row16 col0" >Fold Number</td>
+      <td id="T_d03fd_row16_col1" class="data row16 col1" >10</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row17" class="row_heading level0 row17" >17</th>
+      <td id="T_d03fd_row17_col0" class="data row17 col0" >CPU Jobs</td>
+      <td id="T_d03fd_row17_col1" class="data row17 col1" >-1</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row18" class="row_heading level0 row18" >18</th>
+      <td id="T_d03fd_row18_col0" class="data row18 col0" >Use GPU</td>
+      <td id="T_d03fd_row18_col1" class="data row18 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row19" class="row_heading level0 row19" >19</th>
+      <td id="T_d03fd_row19_col0" class="data row19 col0" >Log Experiment</td>
+      <td id="T_d03fd_row19_col1" class="data row19 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row20" class="row_heading level0 row20" >20</th>
+      <td id="T_d03fd_row20_col0" class="data row20 col0" >Experiment Name</td>
+      <td id="T_d03fd_row20_col1" class="data row20 col1" >clf-default-name</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row21" class="row_heading level0 row21" >21</th>
+      <td id="T_d03fd_row21_col0" class="data row21 col0" >USI</td>
+      <td id="T_d03fd_row21_col1" class="data row21 col1" >95c1</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row22" class="row_heading level0 row22" >22</th>
+      <td id="T_d03fd_row22_col0" class="data row22 col0" >Imputation Type</td>
+      <td id="T_d03fd_row22_col1" class="data row22 col1" >simple</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row23" class="row_heading level0 row23" >23</th>
+      <td id="T_d03fd_row23_col0" class="data row23 col0" >Iterative Imputation Iteration</td>
+      <td id="T_d03fd_row23_col1" class="data row23 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row24" class="row_heading level0 row24" >24</th>
+      <td id="T_d03fd_row24_col0" class="data row24 col0" >Numeric Imputer</td>
+      <td id="T_d03fd_row24_col1" class="data row24 col1" >mean</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row25" class="row_heading level0 row25" >25</th>
+      <td id="T_d03fd_row25_col0" class="data row25 col0" >Iterative Imputation Numeric Model</td>
+      <td id="T_d03fd_row25_col1" class="data row25 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row26" class="row_heading level0 row26" >26</th>
+      <td id="T_d03fd_row26_col0" class="data row26 col0" >Categorical Imputer</td>
+      <td id="T_d03fd_row26_col1" class="data row26 col1" >constant</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row27" class="row_heading level0 row27" >27</th>
+      <td id="T_d03fd_row27_col0" class="data row27 col0" >Iterative Imputation Categorical Model</td>
+      <td id="T_d03fd_row27_col1" class="data row27 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row28" class="row_heading level0 row28" >28</th>
+      <td id="T_d03fd_row28_col0" class="data row28 col0" >Unknown Categoricals Handling</td>
+      <td id="T_d03fd_row28_col1" class="data row28 col1" >least_frequent</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row29" class="row_heading level0 row29" >29</th>
+      <td id="T_d03fd_row29_col0" class="data row29 col0" >Normalize</td>
+      <td id="T_d03fd_row29_col1" class="data row29 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row30" class="row_heading level0 row30" >30</th>
+      <td id="T_d03fd_row30_col0" class="data row30 col0" >Normalize Method</td>
+      <td id="T_d03fd_row30_col1" class="data row30 col1" >zscore</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row31" class="row_heading level0 row31" >31</th>
+      <td id="T_d03fd_row31_col0" class="data row31 col0" >Transformation</td>
+      <td id="T_d03fd_row31_col1" class="data row31 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row32" class="row_heading level0 row32" >32</th>
+      <td id="T_d03fd_row32_col0" class="data row32 col0" >Transformation Method</td>
+      <td id="T_d03fd_row32_col1" class="data row32 col1" >yeo-johnson</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row33" class="row_heading level0 row33" >33</th>
+      <td id="T_d03fd_row33_col0" class="data row33 col0" >PCA</td>
+      <td id="T_d03fd_row33_col1" class="data row33 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row34" class="row_heading level0 row34" >34</th>
+      <td id="T_d03fd_row34_col0" class="data row34 col0" >PCA Method</td>
+      <td id="T_d03fd_row34_col1" class="data row34 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row35" class="row_heading level0 row35" >35</th>
+      <td id="T_d03fd_row35_col0" class="data row35 col0" >PCA Components</td>
+      <td id="T_d03fd_row35_col1" class="data row35 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row36" class="row_heading level0 row36" >36</th>
+      <td id="T_d03fd_row36_col0" class="data row36 col0" >Ignore Low Variance</td>
+      <td id="T_d03fd_row36_col1" class="data row36 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row37" class="row_heading level0 row37" >37</th>
+      <td id="T_d03fd_row37_col0" class="data row37 col0" >Combine Rare Levels</td>
+      <td id="T_d03fd_row37_col1" class="data row37 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row38" class="row_heading level0 row38" >38</th>
+      <td id="T_d03fd_row38_col0" class="data row38 col0" >Rare Level Threshold</td>
+      <td id="T_d03fd_row38_col1" class="data row38 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row39" class="row_heading level0 row39" >39</th>
+      <td id="T_d03fd_row39_col0" class="data row39 col0" >Numeric Binning</td>
+      <td id="T_d03fd_row39_col1" class="data row39 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row40" class="row_heading level0 row40" >40</th>
+      <td id="T_d03fd_row40_col0" class="data row40 col0" >Remove Outliers</td>
+      <td id="T_d03fd_row40_col1" class="data row40 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row41" class="row_heading level0 row41" >41</th>
+      <td id="T_d03fd_row41_col0" class="data row41 col0" >Outliers Threshold</td>
+      <td id="T_d03fd_row41_col1" class="data row41 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row42" class="row_heading level0 row42" >42</th>
+      <td id="T_d03fd_row42_col0" class="data row42 col0" >Remove Multicollinearity</td>
+      <td id="T_d03fd_row42_col1" class="data row42 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row43" class="row_heading level0 row43" >43</th>
+      <td id="T_d03fd_row43_col0" class="data row43 col0" >Multicollinearity Threshold</td>
+      <td id="T_d03fd_row43_col1" class="data row43 col1" >0.950000</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row44" class="row_heading level0 row44" >44</th>
+      <td id="T_d03fd_row44_col0" class="data row44 col0" >Remove Perfect Collinearity</td>
+      <td id="T_d03fd_row44_col1" class="data row44 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row45" class="row_heading level0 row45" >45</th>
+      <td id="T_d03fd_row45_col0" class="data row45 col0" >Clustering</td>
+      <td id="T_d03fd_row45_col1" class="data row45 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row46" class="row_heading level0 row46" >46</th>
+      <td id="T_d03fd_row46_col0" class="data row46 col0" >Clustering Iteration</td>
+      <td id="T_d03fd_row46_col1" class="data row46 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row47" class="row_heading level0 row47" >47</th>
+      <td id="T_d03fd_row47_col0" class="data row47 col0" >Polynomial Features</td>
+      <td id="T_d03fd_row47_col1" class="data row47 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row48" class="row_heading level0 row48" >48</th>
+      <td id="T_d03fd_row48_col0" class="data row48 col0" >Polynomial Degree</td>
+      <td id="T_d03fd_row48_col1" class="data row48 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row49" class="row_heading level0 row49" >49</th>
+      <td id="T_d03fd_row49_col0" class="data row49 col0" >Trignometry Features</td>
+      <td id="T_d03fd_row49_col1" class="data row49 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row50" class="row_heading level0 row50" >50</th>
+      <td id="T_d03fd_row50_col0" class="data row50 col0" >Polynomial Threshold</td>
+      <td id="T_d03fd_row50_col1" class="data row50 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row51" class="row_heading level0 row51" >51</th>
+      <td id="T_d03fd_row51_col0" class="data row51 col0" >Group Features</td>
+      <td id="T_d03fd_row51_col1" class="data row51 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row52" class="row_heading level0 row52" >52</th>
+      <td id="T_d03fd_row52_col0" class="data row52 col0" >Feature Selection</td>
+      <td id="T_d03fd_row52_col1" class="data row52 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row53" class="row_heading level0 row53" >53</th>
+      <td id="T_d03fd_row53_col0" class="data row53 col0" >Feature Selection Method</td>
+      <td id="T_d03fd_row53_col1" class="data row53 col1" >classic</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row54" class="row_heading level0 row54" >54</th>
+      <td id="T_d03fd_row54_col0" class="data row54 col0" >Features Selection Threshold</td>
+      <td id="T_d03fd_row54_col1" class="data row54 col1" >0.800000</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row55" class="row_heading level0 row55" >55</th>
+      <td id="T_d03fd_row55_col0" class="data row55 col0" >Feature Interaction</td>
+      <td id="T_d03fd_row55_col1" class="data row55 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row56" class="row_heading level0 row56" >56</th>
+      <td id="T_d03fd_row56_col0" class="data row56 col0" >Feature Ratio</td>
+      <td id="T_d03fd_row56_col1" class="data row56 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row57" class="row_heading level0 row57" >57</th>
+      <td id="T_d03fd_row57_col0" class="data row57 col0" >Interaction Threshold</td>
+      <td id="T_d03fd_row57_col1" class="data row57 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row58" class="row_heading level0 row58" >58</th>
+      <td id="T_d03fd_row58_col0" class="data row58 col0" >Fix Imbalance</td>
+      <td id="T_d03fd_row58_col1" class="data row58 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_d03fd_level0_row59" class="row_heading level0 row59" >59</th>
+      <td id="T_d03fd_row59_col0" class="data row59 col0" >Fix Imbalance Method</td>
+      <td id="T_d03fd_row59_col1" class="data row59 col1" >SMOTE</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Removed features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pd.DataFrame(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)).T
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>16</th>
+      <th>17</th>
+      <th>18</th>
+      <th>19</th>
+      <th>20</th>
+      <th>21</th>
+      <th>22</th>
+      <th>23</th>
+      <th>24</th>
+      <th>25</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>original_glcm_SumEntropy</td>
+      <td>original_glcm_Autocorrelation</td>
+      <td>lesion_dce</td>
+      <td>original_firstorder_Energy</td>
+      <td>original_firstorder_Uniformity</td>
+      <td>original_glcm_DifferenceAverage</td>
+      <td>original_glcm_Imc2</td>
+      <td>original_glcm_MaximumProbability</td>
+      <td>original_glcm_SumAverage</td>
+      <td>original_firstorder_Mean</td>
+      <td>...</td>
+      <td>original_glcm_MCC</td>
+      <td>original_firstorder_Entropy</td>
+      <td>original_firstorder_InterquartileRange</td>
+      <td>original_firstorder_Median</td>
+      <td>original_glcm_ClusterTendency</td>
+      <td>original_glcm_SumSquares</td>
+      <td>original_glcm_Idn</td>
+      <td>original_glcm_DifferenceVariance</td>
+      <td>original_glcm_Idm</td>
+      <td>original_firstorder_RootMeanSquared</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 26 columns</p>
+</div></div></div>
+</div>
+<p>Selected features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pd.DataFrame(set(get_config(&#39;X_train&#39;).columns)).T
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>12</th>
+      <th>13</th>
+      <th>14</th>
+      <th>15</th>
+      <th>16</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>original_firstorder_Minimum</td>
+      <td>original_firstorder_Maximum</td>
+      <td>original_firstorder_10Percentile</td>
+      <td>original_glcm_Contrast</td>
+      <td>original_glcm_ClusterShade</td>
+      <td>original_firstorder_Range</td>
+      <td>original_glcm_Correlation</td>
+      <td>original_glcm_JointEnergy</td>
+      <td>original_firstorder_Kurtosis</td>
+      <td>original_firstorder_TotalEnergy</td>
+      <td>original_glcm_Idmn</td>
+      <td>original_firstorder_Skewness</td>
+      <td>original_glcm_JointAverage</td>
+      <td>original_glcm_InverseVariance</td>
+      <td>original_glcm_ClusterProminence</td>
+      <td>original_firstorder_90Percentile</td>
+      <td>original_glcm_Imc1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>AutoML best model</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_088e3_ th {
+  text-align: left;
+}
+#T_088e3_row0_col0, #T_088e3_row0_col2, #T_088e3_row0_col3, #T_088e3_row0_col4, #T_088e3_row1_col0, #T_088e3_row1_col1, #T_088e3_row1_col3, #T_088e3_row1_col4, #T_088e3_row1_col5, #T_088e3_row1_col6, #T_088e3_row1_col7, #T_088e3_row2_col0, #T_088e3_row2_col1, #T_088e3_row2_col2, #T_088e3_row2_col3, #T_088e3_row2_col4, #T_088e3_row2_col5, #T_088e3_row2_col6, #T_088e3_row2_col7, #T_088e3_row3_col0, #T_088e3_row3_col1, #T_088e3_row3_col2, #T_088e3_row3_col3, #T_088e3_row3_col4, #T_088e3_row3_col5, #T_088e3_row3_col6, #T_088e3_row3_col7, #T_088e3_row4_col0, #T_088e3_row4_col1, #T_088e3_row4_col2, #T_088e3_row4_col3, #T_088e3_row4_col4, #T_088e3_row4_col5, #T_088e3_row4_col6, #T_088e3_row4_col7, #T_088e3_row5_col0, #T_088e3_row5_col1, #T_088e3_row5_col2, #T_088e3_row5_col3, #T_088e3_row5_col4, #T_088e3_row5_col5, #T_088e3_row5_col6, #T_088e3_row5_col7, #T_088e3_row6_col0, #T_088e3_row6_col1, #T_088e3_row6_col2, #T_088e3_row6_col3, #T_088e3_row6_col4, #T_088e3_row6_col5, #T_088e3_row6_col6, #T_088e3_row6_col7, #T_088e3_row7_col0, #T_088e3_row7_col1, #T_088e3_row7_col2, #T_088e3_row7_col3, #T_088e3_row7_col4, #T_088e3_row7_col5, #T_088e3_row7_col6, #T_088e3_row7_col7, #T_088e3_row8_col0, #T_088e3_row8_col1, #T_088e3_row8_col2, #T_088e3_row8_col3, #T_088e3_row8_col4, #T_088e3_row8_col5, #T_088e3_row8_col6, #T_088e3_row8_col7, #T_088e3_row9_col0, #T_088e3_row9_col1, #T_088e3_row9_col2, #T_088e3_row9_col3, #T_088e3_row9_col4, #T_088e3_row9_col5, #T_088e3_row9_col6, #T_088e3_row9_col7, #T_088e3_row10_col0, #T_088e3_row10_col1, #T_088e3_row10_col2, #T_088e3_row10_col3, #T_088e3_row10_col4, #T_088e3_row10_col5, #T_088e3_row10_col6, #T_088e3_row10_col7, #T_088e3_row11_col0, #T_088e3_row11_col1, #T_088e3_row11_col2, #T_088e3_row11_col3, #T_088e3_row11_col5, #T_088e3_row11_col6, #T_088e3_row11_col7, #T_088e3_row12_col0, #T_088e3_row12_col1, #T_088e3_row12_col2, #T_088e3_row12_col3, #T_088e3_row12_col4, #T_088e3_row12_col5, #T_088e3_row12_col6, #T_088e3_row12_col7, #T_088e3_row13_col0, #T_088e3_row13_col1, #T_088e3_row13_col2, #T_088e3_row13_col4, #T_088e3_row13_col5, #T_088e3_row13_col6, #T_088e3_row13_col7 {
+  text-align: left;
+}
+#T_088e3_row0_col1, #T_088e3_row0_col5, #T_088e3_row0_col6, #T_088e3_row0_col7, #T_088e3_row1_col2, #T_088e3_row11_col4, #T_088e3_row13_col3 {
+  text-align: left;
+  background-color: yellow;
+}
+#T_088e3_row0_col8, #T_088e3_row1_col8, #T_088e3_row2_col8, #T_088e3_row3_col8, #T_088e3_row4_col8, #T_088e3_row5_col8, #T_088e3_row7_col8, #T_088e3_row8_col8, #T_088e3_row10_col8, #T_088e3_row11_col8 {
+  text-align: left;
+  background-color: lightgrey;
+}
+#T_088e3_row6_col8, #T_088e3_row9_col8, #T_088e3_row12_col8, #T_088e3_row13_col8 {
+  text-align: left;
+  background-color: yellow;
+  background-color: lightgrey;
+}
+</style>
+<table id="T_088e3_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Model</th>
+      <th class="col_heading level0 col1" >Accuracy</th>
+      <th class="col_heading level0 col2" >AUC</th>
+      <th class="col_heading level0 col3" >Recall</th>
+      <th class="col_heading level0 col4" >Prec.</th>
+      <th class="col_heading level0 col5" >F1</th>
+      <th class="col_heading level0 col6" >Kappa</th>
+      <th class="col_heading level0 col7" >MCC</th>
+      <th class="col_heading level0 col8" >TT (Sec)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_088e3_level0_row0" class="row_heading level0 row0" >lightgbm</th>
+      <td id="T_088e3_row0_col0" class="data row0 col0" >Light Gradient Boosting Machine</td>
+      <td id="T_088e3_row0_col1" class="data row0 col1" >0.8811</td>
+      <td id="T_088e3_row0_col2" class="data row0 col2" >0.8597</td>
+      <td id="T_088e3_row0_col3" class="data row0 col3" >0.9275</td>
+      <td id="T_088e3_row0_col4" class="data row0 col4" >0.9156</td>
+      <td id="T_088e3_row0_col5" class="data row0 col5" >0.9211</td>
+      <td id="T_088e3_row0_col6" class="data row0 col6" >0.6784</td>
+      <td id="T_088e3_row0_col7" class="data row0 col7" >0.6809</td>
+      <td id="T_088e3_row0_col8" class="data row0 col8" >0.0300</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row1" class="row_heading level0 row1" >et</th>
+      <td id="T_088e3_row1_col0" class="data row1 col0" >Extra Trees Classifier</td>
+      <td id="T_088e3_row1_col1" class="data row1 col1" >0.8797</td>
+      <td id="T_088e3_row1_col2" class="data row1 col2" >0.8709</td>
+      <td id="T_088e3_row1_col3" class="data row1 col3" >0.9257</td>
+      <td id="T_088e3_row1_col4" class="data row1 col4" >0.9155</td>
+      <td id="T_088e3_row1_col5" class="data row1 col5" >0.9202</td>
+      <td id="T_088e3_row1_col6" class="data row1 col6" >0.6751</td>
+      <td id="T_088e3_row1_col7" class="data row1 col7" >0.6773</td>
+      <td id="T_088e3_row1_col8" class="data row1 col8" >0.1690</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row2" class="row_heading level0 row2" >rf</th>
+      <td id="T_088e3_row2_col0" class="data row2 col0" >Random Forest Classifier</td>
+      <td id="T_088e3_row2_col1" class="data row2 col1" >0.8784</td>
+      <td id="T_088e3_row2_col2" class="data row2 col2" >0.8626</td>
+      <td id="T_088e3_row2_col3" class="data row2 col3" >0.9275</td>
+      <td id="T_088e3_row2_col4" class="data row2 col4" >0.9125</td>
+      <td id="T_088e3_row2_col5" class="data row2 col5" >0.9196</td>
+      <td id="T_088e3_row2_col6" class="data row2 col6" >0.6698</td>
+      <td id="T_088e3_row2_col7" class="data row2 col7" >0.6722</td>
+      <td id="T_088e3_row2_col8" class="data row2 col8" >0.1870</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row3" class="row_heading level0 row3" >knn</th>
+      <td id="T_088e3_row3_col0" class="data row3 col0" >K Neighbors Classifier</td>
+      <td id="T_088e3_row3_col1" class="data row3 col1" >0.8733</td>
+      <td id="T_088e3_row3_col2" class="data row3 col2" >0.8368</td>
+      <td id="T_088e3_row3_col3" class="data row3 col3" >0.9154</td>
+      <td id="T_088e3_row3_col4" class="data row3 col4" >0.9161</td>
+      <td id="T_088e3_row3_col5" class="data row3 col5" >0.9155</td>
+      <td id="T_088e3_row3_col6" class="data row3 col6" >0.6618</td>
+      <td id="T_088e3_row3_col7" class="data row3 col7" >0.6635</td>
+      <td id="T_088e3_row3_col8" class="data row3 col8" >0.0500</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row4" class="row_heading level0 row4" >ada</th>
+      <td id="T_088e3_row4_col0" class="data row4 col0" >Ada Boost Classifier</td>
+      <td id="T_088e3_row4_col1" class="data row4 col1" >0.8681</td>
+      <td id="T_088e3_row4_col2" class="data row4 col2" >0.8615</td>
+      <td id="T_088e3_row4_col3" class="data row4 col3" >0.9067</td>
+      <td id="T_088e3_row4_col4" class="data row4 col4" >0.9173</td>
+      <td id="T_088e3_row4_col5" class="data row4 col5" >0.9115</td>
+      <td id="T_088e3_row4_col6" class="data row4 col6" >0.6515</td>
+      <td id="T_088e3_row4_col7" class="data row4 col7" >0.6540</td>
+      <td id="T_088e3_row4_col8" class="data row4 col8" >0.0310</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row5" class="row_heading level0 row5" >gbc</th>
+      <td id="T_088e3_row5_col0" class="data row5 col0" >Gradient Boosting Classifier</td>
+      <td id="T_088e3_row5_col1" class="data row5 col1" >0.8668</td>
+      <td id="T_088e3_row5_col2" class="data row5 col2" >0.8563</td>
+      <td id="T_088e3_row5_col3" class="data row5 col3" >0.9102</td>
+      <td id="T_088e3_row5_col4" class="data row5 col4" >0.9126</td>
+      <td id="T_088e3_row5_col5" class="data row5 col5" >0.9109</td>
+      <td id="T_088e3_row5_col6" class="data row5 col6" >0.6460</td>
+      <td id="T_088e3_row5_col7" class="data row5 col7" >0.6485</td>
+      <td id="T_088e3_row5_col8" class="data row5 col8" >0.0550</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row6" class="row_heading level0 row6" >ridge</th>
+      <td id="T_088e3_row6_col0" class="data row6 col0" >Ridge Classifier</td>
+      <td id="T_088e3_row6_col1" class="data row6 col1" >0.8604</td>
+      <td id="T_088e3_row6_col2" class="data row6 col2" >0.0000</td>
+      <td id="T_088e3_row6_col3" class="data row6 col3" >0.9084</td>
+      <td id="T_088e3_row6_col4" class="data row6 col4" >0.9060</td>
+      <td id="T_088e3_row6_col5" class="data row6 col5" >0.9068</td>
+      <td id="T_088e3_row6_col6" class="data row6 col6" >0.6271</td>
+      <td id="T_088e3_row6_col7" class="data row6 col7" >0.6290</td>
+      <td id="T_088e3_row6_col8" class="data row6 col8" >0.0040</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row7" class="row_heading level0 row7" >lr</th>
+      <td id="T_088e3_row7_col0" class="data row7 col0" >Logistic Regression</td>
+      <td id="T_088e3_row7_col1" class="data row7 col1" >0.8603</td>
+      <td id="T_088e3_row7_col2" class="data row7 col2" >0.8432</td>
+      <td id="T_088e3_row7_col3" class="data row7 col3" >0.9015</td>
+      <td id="T_088e3_row7_col4" class="data row7 col4" >0.9117</td>
+      <td id="T_088e3_row7_col5" class="data row7 col5" >0.9062</td>
+      <td id="T_088e3_row7_col6" class="data row7 col6" >0.6318</td>
+      <td id="T_088e3_row7_col7" class="data row7 col7" >0.6340</td>
+      <td id="T_088e3_row7_col8" class="data row7 col8" >0.4720</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row8" class="row_heading level0 row8" >qda</th>
+      <td id="T_088e3_row8_col0" class="data row8 col0" >Quadratic Discriminant Analysis</td>
+      <td id="T_088e3_row8_col1" class="data row8 col1" >0.8552</td>
+      <td id="T_088e3_row8_col2" class="data row8 col2" >0.8367</td>
+      <td id="T_088e3_row8_col3" class="data row8 col3" >0.8964</td>
+      <td id="T_088e3_row8_col4" class="data row8 col4" >0.9097</td>
+      <td id="T_088e3_row8_col5" class="data row8 col5" >0.9024</td>
+      <td id="T_088e3_row8_col6" class="data row8 col6" >0.6201</td>
+      <td id="T_088e3_row8_col7" class="data row8 col7" >0.6229</td>
+      <td id="T_088e3_row8_col8" class="data row8 col8" >0.0050</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row9" class="row_heading level0 row9" >lda</th>
+      <td id="T_088e3_row9_col0" class="data row9 col0" >Linear Discriminant Analysis</td>
+      <td id="T_088e3_row9_col1" class="data row9 col1" >0.8539</td>
+      <td id="T_088e3_row9_col2" class="data row9 col2" >0.8238</td>
+      <td id="T_088e3_row9_col3" class="data row9 col3" >0.8998</td>
+      <td id="T_088e3_row9_col4" class="data row9 col4" >0.9052</td>
+      <td id="T_088e3_row9_col5" class="data row9 col5" >0.9020</td>
+      <td id="T_088e3_row9_col6" class="data row9 col6" >0.6135</td>
+      <td id="T_088e3_row9_col7" class="data row9 col7" >0.6160</td>
+      <td id="T_088e3_row9_col8" class="data row9 col8" >0.0040</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row10" class="row_heading level0 row10" >svm</th>
+      <td id="T_088e3_row10_col0" class="data row10 col0" >SVM - Linear Kernel</td>
+      <td id="T_088e3_row10_col1" class="data row10 col1" >0.8267</td>
+      <td id="T_088e3_row10_col2" class="data row10 col2" >0.0000</td>
+      <td id="T_088e3_row10_col3" class="data row10 col3" >0.8791</td>
+      <td id="T_088e3_row10_col4" class="data row10 col4" >0.8938</td>
+      <td id="T_088e3_row10_col5" class="data row10 col5" >0.8837</td>
+      <td id="T_088e3_row10_col6" class="data row10 col6" >0.5271</td>
+      <td id="T_088e3_row10_col7" class="data row10 col7" >0.5285</td>
+      <td id="T_088e3_row10_col8" class="data row10 col8" >0.0050</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row11" class="row_heading level0 row11" >dt</th>
+      <td id="T_088e3_row11_col0" class="data row11 col0" >Decision Tree Classifier</td>
+      <td id="T_088e3_row11_col1" class="data row11 col1" >0.8177</td>
+      <td id="T_088e3_row11_col2" class="data row11 col2" >0.7734</td>
+      <td id="T_088e3_row11_col3" class="data row11 col3" >0.8292</td>
+      <td id="T_088e3_row11_col4" class="data row11 col4" >0.9213</td>
+      <td id="T_088e3_row11_col5" class="data row11 col5" >0.8716</td>
+      <td id="T_088e3_row11_col6" class="data row11 col6" >0.5579</td>
+      <td id="T_088e3_row11_col7" class="data row11 col7" >0.5704</td>
+      <td id="T_088e3_row11_col8" class="data row11 col8" >0.0050</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row12" class="row_heading level0 row12" >nb</th>
+      <td id="T_088e3_row12_col0" class="data row12 col0" >Naive Bayes</td>
+      <td id="T_088e3_row12_col1" class="data row12 col1" >0.7749</td>
+      <td id="T_088e3_row12_col2" class="data row12 col2" >0.8205</td>
+      <td id="T_088e3_row12_col3" class="data row12 col3" >0.7927</td>
+      <td id="T_088e3_row12_col4" class="data row12 col4" >0.8960</td>
+      <td id="T_088e3_row12_col5" class="data row12 col5" >0.8400</td>
+      <td id="T_088e3_row12_col6" class="data row12 col6" >0.4630</td>
+      <td id="T_088e3_row12_col7" class="data row12 col7" >0.4757</td>
+      <td id="T_088e3_row12_col8" class="data row12 col8" >0.0040</td>
+    </tr>
+    <tr>
+      <th id="T_088e3_level0_row13" class="row_heading level0 row13" >dummy</th>
+      <td id="T_088e3_row13_col0" class="data row13 col0" >Dummy Classifier</td>
+      <td id="T_088e3_row13_col1" class="data row13 col1" >0.7491</td>
+      <td id="T_088e3_row13_col2" class="data row13 col2" >0.5000</td>
+      <td id="T_088e3_row13_col3" class="data row13 col3" >1.0000</td>
+      <td id="T_088e3_row13_col4" class="data row13 col4" >0.7491</td>
+      <td id="T_088e3_row13_col5" class="data row13 col5" >0.8565</td>
+      <td id="T_088e3_row13_col6" class="data row13 col6" >0.0000</td>
+      <td id="T_088e3_row13_col7" class="data row13 col7" >0.0000</td>
+      <td id="T_088e3_row13_col8" class="data row13 col8" >0.0040</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i) for i in top3]
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_f149b_row10_col0, #T_f149b_row10_col1, #T_f149b_row10_col2, #T_f149b_row10_col3, #T_f149b_row10_col4, #T_f149b_row10_col5, #T_f149b_row10_col6 {
+  background: yellow;
+}
+</style>
+<table id="T_f149b_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Accuracy</th>
+      <th class="col_heading level0 col1" >AUC</th>
+      <th class="col_heading level0 col2" >Recall</th>
+      <th class="col_heading level0 col3" >Prec.</th>
+      <th class="col_heading level0 col4" >F1</th>
+      <th class="col_heading level0 col5" >Kappa</th>
+      <th class="col_heading level0 col6" >MCC</th>
+    </tr>
+    <tr>
+      <th class="index_name level0" >Fold</th>
+      <th class="blank col0" >&nbsp;</th>
+      <th class="blank col1" >&nbsp;</th>
+      <th class="blank col2" >&nbsp;</th>
+      <th class="blank col3" >&nbsp;</th>
+      <th class="blank col4" >&nbsp;</th>
+      <th class="blank col5" >&nbsp;</th>
+      <th class="blank col6" >&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_f149b_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_f149b_row0_col0" class="data row0 col0" >0.8718</td>
+      <td id="T_f149b_row0_col1" class="data row0 col1" >0.8517</td>
+      <td id="T_f149b_row0_col2" class="data row0 col2" >0.9138</td>
+      <td id="T_f149b_row0_col3" class="data row0 col3" >0.9138</td>
+      <td id="T_f149b_row0_col4" class="data row0 col4" >0.9138</td>
+      <td id="T_f149b_row0_col5" class="data row0 col5" >0.6638</td>
+      <td id="T_f149b_row0_col6" class="data row0 col6" >0.6638</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_f149b_row1_col0" class="data row1 col0" >0.8462</td>
+      <td id="T_f149b_row1_col1" class="data row1 col1" >0.8082</td>
+      <td id="T_f149b_row1_col2" class="data row1 col2" >0.9483</td>
+      <td id="T_f149b_row1_col3" class="data row1 col3" >0.8594</td>
+      <td id="T_f149b_row1_col4" class="data row1 col4" >0.9016</td>
+      <td id="T_f149b_row1_col5" class="data row1 col5" >0.5526</td>
+      <td id="T_f149b_row1_col6" class="data row1 col6" >0.5670</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_f149b_row2_col0" class="data row2 col0" >0.8846</td>
+      <td id="T_f149b_row2_col1" class="data row2 col1" >0.8853</td>
+      <td id="T_f149b_row2_col2" class="data row2 col2" >0.8966</td>
+      <td id="T_f149b_row2_col3" class="data row2 col3" >0.9455</td>
+      <td id="T_f149b_row2_col4" class="data row2 col4" >0.9204</td>
+      <td id="T_f149b_row2_col5" class="data row2 col5" >0.7116</td>
+      <td id="T_f149b_row2_col6" class="data row2 col6" >0.7149</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_f149b_row3_col0" class="data row3 col0" >0.8701</td>
+      <td id="T_f149b_row3_col1" class="data row3 col1" >0.8829</td>
+      <td id="T_f149b_row3_col2" class="data row3 col2" >0.9310</td>
+      <td id="T_f149b_row3_col3" class="data row3 col3" >0.9000</td>
+      <td id="T_f149b_row3_col4" class="data row3 col4" >0.9153</td>
+      <td id="T_f149b_row3_col5" class="data row3 col5" >0.6378</td>
+      <td id="T_f149b_row3_col6" class="data row3 col6" >0.6395</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_f149b_row4_col0" class="data row4 col0" >0.9091</td>
+      <td id="T_f149b_row4_col1" class="data row4 col1" >0.8916</td>
+      <td id="T_f149b_row4_col2" class="data row4 col2" >0.9483</td>
+      <td id="T_f149b_row4_col3" class="data row4 col3" >0.9322</td>
+      <td id="T_f149b_row4_col4" class="data row4 col4" >0.9402</td>
+      <td id="T_f149b_row4_col5" class="data row4 col5" >0.7510</td>
+      <td id="T_f149b_row4_col6" class="data row4 col6" >0.7515</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_f149b_row5_col0" class="data row5 col0" >0.9221</td>
+      <td id="T_f149b_row5_col1" class="data row5 col1" >0.9664</td>
+      <td id="T_f149b_row5_col2" class="data row5 col2" >0.9655</td>
+      <td id="T_f149b_row5_col3" class="data row5 col3" >0.9333</td>
+      <td id="T_f149b_row5_col4" class="data row5 col4" >0.9492</td>
+      <td id="T_f149b_row5_col5" class="data row5 col5" >0.7827</td>
+      <td id="T_f149b_row5_col6" class="data row5 col6" >0.7848</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_f149b_row6_col0" class="data row6 col0" >0.8961</td>
+      <td id="T_f149b_row6_col1" class="data row6 col1" >0.8348</td>
+      <td id="T_f149b_row6_col2" class="data row6 col2" >0.9483</td>
+      <td id="T_f149b_row6_col3" class="data row6 col3" >0.9167</td>
+      <td id="T_f149b_row6_col4" class="data row6 col4" >0.9322</td>
+      <td id="T_f149b_row6_col5" class="data row6 col5" >0.7103</td>
+      <td id="T_f149b_row6_col6" class="data row6 col6" >0.7121</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_f149b_row7_col0" class="data row7 col0" >0.8571</td>
+      <td id="T_f149b_row7_col1" class="data row7 col1" >0.8299</td>
+      <td id="T_f149b_row7_col2" class="data row7 col2" >0.9138</td>
+      <td id="T_f149b_row7_col3" class="data row7 col3" >0.8983</td>
+      <td id="T_f149b_row7_col4" class="data row7 col4" >0.9060</td>
+      <td id="T_f149b_row7_col5" class="data row7 col5" >0.6088</td>
+      <td id="T_f149b_row7_col6" class="data row7 col6" >0.6092</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_f149b_row8_col0" class="data row8 col0" >0.8831</td>
+      <td id="T_f149b_row8_col1" class="data row8 col1" >0.8525</td>
+      <td id="T_f149b_row8_col2" class="data row8 col2" >0.9138</td>
+      <td id="T_f149b_row8_col3" class="data row8 col3" >0.9298</td>
+      <td id="T_f149b_row8_col4" class="data row8 col4" >0.9217</td>
+      <td id="T_f149b_row8_col5" class="data row8 col5" >0.6910</td>
+      <td id="T_f149b_row8_col6" class="data row8 col6" >0.6914</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_f149b_row9_col0" class="data row9 col0" >0.8701</td>
+      <td id="T_f149b_row9_col1" class="data row9 col1" >0.8395</td>
+      <td id="T_f149b_row9_col2" class="data row9 col2" >0.9298</td>
+      <td id="T_f149b_row9_col3" class="data row9 col3" >0.8983</td>
+      <td id="T_f149b_row9_col4" class="data row9 col4" >0.9138</td>
+      <td id="T_f149b_row9_col5" class="data row9 col5" >0.6510</td>
+      <td id="T_f149b_row9_col6" class="data row9 col6" >0.6525</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row10" class="row_heading level0 row10" >Mean</th>
+      <td id="T_f149b_row10_col0" class="data row10 col0" >0.8810</td>
+      <td id="T_f149b_row10_col1" class="data row10 col1" >0.8643</td>
+      <td id="T_f149b_row10_col2" class="data row10 col2" >0.9309</td>
+      <td id="T_f149b_row10_col3" class="data row10 col3" >0.9127</td>
+      <td id="T_f149b_row10_col4" class="data row10 col4" >0.9214</td>
+      <td id="T_f149b_row10_col5" class="data row10 col5" >0.6761</td>
+      <td id="T_f149b_row10_col6" class="data row10 col6" >0.6787</td>
+    </tr>
+    <tr>
+      <th id="T_f149b_level0_row11" class="row_heading level0 row11" >Std</th>
+      <td id="T_f149b_row11_col0" class="data row11 col0" >0.0220</td>
+      <td id="T_f149b_row11_col1" class="data row11 col1" >0.0425</td>
+      <td id="T_f149b_row11_col2" class="data row11 col2" >0.0204</td>
+      <td id="T_f149b_row11_col3" class="data row11 col3" >0.0237</td>
+      <td id="T_f149b_row11_col4" class="data row11 col4" >0.0142</td>
+      <td id="T_f149b_row11_col5" class="data row11 col5" >0.0645</td>
+      <td id="T_f149b_row11_col6" class="data row11 col6" >0.0624</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#blender = blend_models(tuned_top3)
+#stacker = stack_models(tuned_top3) 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;AUC&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ExtraTreesClassifier(bootstrap=False, ccp_alpha=0.0, class_weight=None,
+                     criterion=&#39;gini&#39;, max_depth=None, max_features=&#39;auto&#39;,
+                     max_leaf_nodes=None, max_samples=None,
+                     min_impurity_decrease=0.0, min_impurity_split=None,
+                     min_samples_leaf=1, min_samples_split=2,
+                     min_weight_fraction_leaf=0.0, n_estimators=100, n_jobs=-1,
+                     oob_score=False, random_state=1229, verbose=0,
+                     warm_start=False)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;learning&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_23_0.png" src="../_images/predictive_models_23_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;vc&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_24_0.png" src="../_images/predictive_models_24_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;auc&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_25_0.png" src="../_images/predictive_models_25_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try: 
+    plot_model(best_model, plot = &#39;feature_all&#39;)
+except:
+    print(&#39;No feature importance plot available&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_26_0.png" src="../_images/predictive_models_26_0.png" />
+</div>
+</div>
+</section>
+<section id="dwi-hbv-adc-pirads">
+<h2>DWI (HBV) / ADC - PIRADS<a class="headerlink" href="#dwi-hbv-adc-pirads" title="Permalink to this headline">#</a></h2>
+<p>Predicting the DWI/ADC PI-RADS score (0-5) based on the DWI and ADC radiomic features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_dwi&#39;
+
+
+radiomic_dwi = hbv_features.merge(adc_features, on=idx_cols, how=&#39;left&#39;, suffixes=(&#39;_hbv&#39;, &#39;_adc&#39;))
+radiomic_dwi_cols = [ col for col in radiomic_dwi.columns if &#39;original_&#39; in col]
+
+train = dataset.radiological_metadata.merge(radiomic_dwi, on=idx_cols, how=&#39;left&#39;)[[*radiomic_dwi_cols, target]]
+
+# Filter na 
+train = train[~train[target].isin([&#39;na&#39;,&#39;x&#39;,&#39;X&#39;])]
+train = train[~train[target].isna()]
+train[target] = train[target].astype(int)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>train.columns
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Index([&#39;original_firstorder_10Percentile_hbv&#39;,
+       &#39;original_firstorder_90Percentile_hbv&#39;,
+       &#39;original_firstorder_Energy_hbv&#39;, &#39;original_firstorder_Entropy_hbv&#39;,
+       &#39;original_firstorder_InterquartileRange_hbv&#39;,
+       &#39;original_firstorder_Kurtosis_hbv&#39;, &#39;original_firstorder_Maximum_hbv&#39;,
+       &#39;original_firstorder_MeanAbsoluteDeviation_hbv&#39;,
+       &#39;original_firstorder_Mean_hbv&#39;, &#39;original_firstorder_Median_hbv&#39;,
+       &#39;original_firstorder_Minimum_hbv&#39;, &#39;original_firstorder_Range_hbv&#39;,
+       &#39;original_firstorder_RobustMeanAbsoluteDeviation_hbv&#39;,
+       &#39;original_firstorder_RootMeanSquared_hbv&#39;,
+       &#39;original_firstorder_Skewness_hbv&#39;,
+       &#39;original_firstorder_TotalEnergy_hbv&#39;,
+       &#39;original_firstorder_Uniformity_hbv&#39;,
+       &#39;original_firstorder_Variance_hbv&#39;, &#39;original_glcm_Autocorrelation_hbv&#39;,
+       &#39;original_glcm_ClusterProminence_hbv&#39;, &#39;original_glcm_ClusterShade_hbv&#39;,
+       &#39;original_glcm_ClusterTendency_hbv&#39;, &#39;original_glcm_Contrast_hbv&#39;,
+       &#39;original_glcm_Correlation_hbv&#39;, &#39;original_glcm_DifferenceAverage_hbv&#39;,
+       &#39;original_glcm_DifferenceEntropy_hbv&#39;,
+       &#39;original_glcm_DifferenceVariance_hbv&#39;, &#39;original_glcm_Id_hbv&#39;,
+       &#39;original_glcm_Idm_hbv&#39;, &#39;original_glcm_Idmn_hbv&#39;,
+       &#39;original_glcm_Idn_hbv&#39;, &#39;original_glcm_Imc1_hbv&#39;,
+       &#39;original_glcm_Imc2_hbv&#39;, &#39;original_glcm_InverseVariance_hbv&#39;,
+       &#39;original_glcm_JointAverage_hbv&#39;, &#39;original_glcm_JointEnergy_hbv&#39;,
+       &#39;original_glcm_JointEntropy_hbv&#39;, &#39;original_glcm_MCC_hbv&#39;,
+       &#39;original_glcm_MaximumProbability_hbv&#39;, &#39;original_glcm_SumAverage_hbv&#39;,
+       &#39;original_glcm_SumEntropy_hbv&#39;, &#39;original_glcm_SumSquares_hbv&#39;,
+       &#39;original_firstorder_10Percentile_adc&#39;,
+       &#39;original_firstorder_90Percentile_adc&#39;,
+       &#39;original_firstorder_Energy_adc&#39;, &#39;original_firstorder_Entropy_adc&#39;,
+       &#39;original_firstorder_InterquartileRange_adc&#39;,
+       &#39;original_firstorder_Kurtosis_adc&#39;, &#39;original_firstorder_Maximum_adc&#39;,
+       &#39;original_firstorder_MeanAbsoluteDeviation_adc&#39;,
+       &#39;original_firstorder_Mean_adc&#39;, &#39;original_firstorder_Median_adc&#39;,
+       &#39;original_firstorder_Minimum_adc&#39;, &#39;original_firstorder_Range_adc&#39;,
+       &#39;original_firstorder_RobustMeanAbsoluteDeviation_adc&#39;,
+       &#39;original_firstorder_RootMeanSquared_adc&#39;,
+       &#39;original_firstorder_Skewness_adc&#39;,
+       &#39;original_firstorder_TotalEnergy_adc&#39;,
+       &#39;original_firstorder_Uniformity_adc&#39;,
+       &#39;original_firstorder_Variance_adc&#39;, &#39;original_glcm_Autocorrelation_adc&#39;,
+       &#39;original_glcm_ClusterProminence_adc&#39;, &#39;original_glcm_ClusterShade_adc&#39;,
+       &#39;original_glcm_ClusterTendency_adc&#39;, &#39;original_glcm_Contrast_adc&#39;,
+       &#39;original_glcm_Correlation_adc&#39;, &#39;original_glcm_DifferenceAverage_adc&#39;,
+       &#39;original_glcm_DifferenceEntropy_adc&#39;,
+       &#39;original_glcm_DifferenceVariance_adc&#39;, &#39;original_glcm_Id_adc&#39;,
+       &#39;original_glcm_Idm_adc&#39;, &#39;original_glcm_Idmn_adc&#39;,
+       &#39;original_glcm_Idn_adc&#39;, &#39;original_glcm_Imc1_adc&#39;,
+       &#39;original_glcm_Imc2_adc&#39;, &#39;original_glcm_InverseVariance_adc&#39;,
+       &#39;original_glcm_JointAverage_adc&#39;, &#39;original_glcm_JointEnergy_adc&#39;,
+       &#39;original_glcm_JointEntropy_adc&#39;, &#39;original_glcm_MCC_adc&#39;,
+       &#39;original_glcm_MaximumProbability_adc&#39;, &#39;original_glcm_SumAverage_adc&#39;,
+       &#39;original_glcm_SumEntropy_adc&#39;, &#39;original_glcm_SumSquares_adc&#39;,
+       &#39;lesion_dwi&#39;],
+      dtype=&#39;object&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clf1 = setup(
+      data = train, 
+      target = target,
+      session_id=1230,
+      normalize=True,
+      transformation=True,
+      feature_selection=True,
+      ignore_low_variance=True,
+      remove_multicollinearity=True, 
+      silent=True, # Otherwise it will ask for input
+      multicollinearity_threshold=0.95
+)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_42138_row5_col1, #T_42138_row29_col1, #T_42138_row31_col1, #T_42138_row36_col1, #T_42138_row42_col1, #T_42138_row44_col1, #T_42138_row52_col1 {
+  background-color: lightgreen;
+}
+</style>
+<table id="T_42138_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Description</th>
+      <th class="col_heading level0 col1" >Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_42138_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_42138_row0_col0" class="data row0 col0" >session_id</td>
+      <td id="T_42138_row0_col1" class="data row0 col1" >1230</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_42138_row1_col0" class="data row1 col0" >Target</td>
+      <td id="T_42138_row1_col1" class="data row1 col1" >lesion_dwi</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_42138_row2_col0" class="data row2 col0" >Target Type</td>
+      <td id="T_42138_row2_col1" class="data row2 col1" >Multiclass</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_42138_row3_col0" class="data row3 col0" >Label Encoded</td>
+      <td id="T_42138_row3_col1" class="data row3 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_42138_row4_col0" class="data row4 col0" >Original Data</td>
+      <td id="T_42138_row4_col1" class="data row4 col1" >(1302, 85)</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_42138_row5_col0" class="data row5 col0" >Missing Values</td>
+      <td id="T_42138_row5_col1" class="data row5 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_42138_row6_col0" class="data row6 col0" >Numeric Features</td>
+      <td id="T_42138_row6_col1" class="data row6 col1" >84</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_42138_row7_col0" class="data row7 col0" >Categorical Features</td>
+      <td id="T_42138_row7_col1" class="data row7 col1" >0</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_42138_row8_col0" class="data row8 col0" >Ordinal Features</td>
+      <td id="T_42138_row8_col1" class="data row8 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_42138_row9_col0" class="data row9 col0" >High Cardinality Features</td>
+      <td id="T_42138_row9_col1" class="data row9 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row10" class="row_heading level0 row10" >10</th>
+      <td id="T_42138_row10_col0" class="data row10 col0" >High Cardinality Method</td>
+      <td id="T_42138_row10_col1" class="data row10 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row11" class="row_heading level0 row11" >11</th>
+      <td id="T_42138_row11_col0" class="data row11 col0" >Transformed Train Set</td>
+      <td id="T_42138_row11_col1" class="data row11 col1" >(911, 37)</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row12" class="row_heading level0 row12" >12</th>
+      <td id="T_42138_row12_col0" class="data row12 col0" >Transformed Test Set</td>
+      <td id="T_42138_row12_col1" class="data row12 col1" >(391, 37)</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row13" class="row_heading level0 row13" >13</th>
+      <td id="T_42138_row13_col0" class="data row13 col0" >Shuffle Train-Test</td>
+      <td id="T_42138_row13_col1" class="data row13 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row14" class="row_heading level0 row14" >14</th>
+      <td id="T_42138_row14_col0" class="data row14 col0" >Stratify Train-Test</td>
+      <td id="T_42138_row14_col1" class="data row14 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row15" class="row_heading level0 row15" >15</th>
+      <td id="T_42138_row15_col0" class="data row15 col0" >Fold Generator</td>
+      <td id="T_42138_row15_col1" class="data row15 col1" >StratifiedKFold</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row16" class="row_heading level0 row16" >16</th>
+      <td id="T_42138_row16_col0" class="data row16 col0" >Fold Number</td>
+      <td id="T_42138_row16_col1" class="data row16 col1" >10</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row17" class="row_heading level0 row17" >17</th>
+      <td id="T_42138_row17_col0" class="data row17 col0" >CPU Jobs</td>
+      <td id="T_42138_row17_col1" class="data row17 col1" >-1</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row18" class="row_heading level0 row18" >18</th>
+      <td id="T_42138_row18_col0" class="data row18 col0" >Use GPU</td>
+      <td id="T_42138_row18_col1" class="data row18 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row19" class="row_heading level0 row19" >19</th>
+      <td id="T_42138_row19_col0" class="data row19 col0" >Log Experiment</td>
+      <td id="T_42138_row19_col1" class="data row19 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row20" class="row_heading level0 row20" >20</th>
+      <td id="T_42138_row20_col0" class="data row20 col0" >Experiment Name</td>
+      <td id="T_42138_row20_col1" class="data row20 col1" >clf-default-name</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row21" class="row_heading level0 row21" >21</th>
+      <td id="T_42138_row21_col0" class="data row21 col0" >USI</td>
+      <td id="T_42138_row21_col1" class="data row21 col1" >122e</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row22" class="row_heading level0 row22" >22</th>
+      <td id="T_42138_row22_col0" class="data row22 col0" >Imputation Type</td>
+      <td id="T_42138_row22_col1" class="data row22 col1" >simple</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row23" class="row_heading level0 row23" >23</th>
+      <td id="T_42138_row23_col0" class="data row23 col0" >Iterative Imputation Iteration</td>
+      <td id="T_42138_row23_col1" class="data row23 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row24" class="row_heading level0 row24" >24</th>
+      <td id="T_42138_row24_col0" class="data row24 col0" >Numeric Imputer</td>
+      <td id="T_42138_row24_col1" class="data row24 col1" >mean</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row25" class="row_heading level0 row25" >25</th>
+      <td id="T_42138_row25_col0" class="data row25 col0" >Iterative Imputation Numeric Model</td>
+      <td id="T_42138_row25_col1" class="data row25 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row26" class="row_heading level0 row26" >26</th>
+      <td id="T_42138_row26_col0" class="data row26 col0" >Categorical Imputer</td>
+      <td id="T_42138_row26_col1" class="data row26 col1" >constant</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row27" class="row_heading level0 row27" >27</th>
+      <td id="T_42138_row27_col0" class="data row27 col0" >Iterative Imputation Categorical Model</td>
+      <td id="T_42138_row27_col1" class="data row27 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row28" class="row_heading level0 row28" >28</th>
+      <td id="T_42138_row28_col0" class="data row28 col0" >Unknown Categoricals Handling</td>
+      <td id="T_42138_row28_col1" class="data row28 col1" >least_frequent</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row29" class="row_heading level0 row29" >29</th>
+      <td id="T_42138_row29_col0" class="data row29 col0" >Normalize</td>
+      <td id="T_42138_row29_col1" class="data row29 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row30" class="row_heading level0 row30" >30</th>
+      <td id="T_42138_row30_col0" class="data row30 col0" >Normalize Method</td>
+      <td id="T_42138_row30_col1" class="data row30 col1" >zscore</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row31" class="row_heading level0 row31" >31</th>
+      <td id="T_42138_row31_col0" class="data row31 col0" >Transformation</td>
+      <td id="T_42138_row31_col1" class="data row31 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row32" class="row_heading level0 row32" >32</th>
+      <td id="T_42138_row32_col0" class="data row32 col0" >Transformation Method</td>
+      <td id="T_42138_row32_col1" class="data row32 col1" >yeo-johnson</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row33" class="row_heading level0 row33" >33</th>
+      <td id="T_42138_row33_col0" class="data row33 col0" >PCA</td>
+      <td id="T_42138_row33_col1" class="data row33 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row34" class="row_heading level0 row34" >34</th>
+      <td id="T_42138_row34_col0" class="data row34 col0" >PCA Method</td>
+      <td id="T_42138_row34_col1" class="data row34 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row35" class="row_heading level0 row35" >35</th>
+      <td id="T_42138_row35_col0" class="data row35 col0" >PCA Components</td>
+      <td id="T_42138_row35_col1" class="data row35 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row36" class="row_heading level0 row36" >36</th>
+      <td id="T_42138_row36_col0" class="data row36 col0" >Ignore Low Variance</td>
+      <td id="T_42138_row36_col1" class="data row36 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row37" class="row_heading level0 row37" >37</th>
+      <td id="T_42138_row37_col0" class="data row37 col0" >Combine Rare Levels</td>
+      <td id="T_42138_row37_col1" class="data row37 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row38" class="row_heading level0 row38" >38</th>
+      <td id="T_42138_row38_col0" class="data row38 col0" >Rare Level Threshold</td>
+      <td id="T_42138_row38_col1" class="data row38 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row39" class="row_heading level0 row39" >39</th>
+      <td id="T_42138_row39_col0" class="data row39 col0" >Numeric Binning</td>
+      <td id="T_42138_row39_col1" class="data row39 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row40" class="row_heading level0 row40" >40</th>
+      <td id="T_42138_row40_col0" class="data row40 col0" >Remove Outliers</td>
+      <td id="T_42138_row40_col1" class="data row40 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row41" class="row_heading level0 row41" >41</th>
+      <td id="T_42138_row41_col0" class="data row41 col0" >Outliers Threshold</td>
+      <td id="T_42138_row41_col1" class="data row41 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row42" class="row_heading level0 row42" >42</th>
+      <td id="T_42138_row42_col0" class="data row42 col0" >Remove Multicollinearity</td>
+      <td id="T_42138_row42_col1" class="data row42 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row43" class="row_heading level0 row43" >43</th>
+      <td id="T_42138_row43_col0" class="data row43 col0" >Multicollinearity Threshold</td>
+      <td id="T_42138_row43_col1" class="data row43 col1" >0.950000</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row44" class="row_heading level0 row44" >44</th>
+      <td id="T_42138_row44_col0" class="data row44 col0" >Remove Perfect Collinearity</td>
+      <td id="T_42138_row44_col1" class="data row44 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row45" class="row_heading level0 row45" >45</th>
+      <td id="T_42138_row45_col0" class="data row45 col0" >Clustering</td>
+      <td id="T_42138_row45_col1" class="data row45 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row46" class="row_heading level0 row46" >46</th>
+      <td id="T_42138_row46_col0" class="data row46 col0" >Clustering Iteration</td>
+      <td id="T_42138_row46_col1" class="data row46 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row47" class="row_heading level0 row47" >47</th>
+      <td id="T_42138_row47_col0" class="data row47 col0" >Polynomial Features</td>
+      <td id="T_42138_row47_col1" class="data row47 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row48" class="row_heading level0 row48" >48</th>
+      <td id="T_42138_row48_col0" class="data row48 col0" >Polynomial Degree</td>
+      <td id="T_42138_row48_col1" class="data row48 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row49" class="row_heading level0 row49" >49</th>
+      <td id="T_42138_row49_col0" class="data row49 col0" >Trignometry Features</td>
+      <td id="T_42138_row49_col1" class="data row49 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row50" class="row_heading level0 row50" >50</th>
+      <td id="T_42138_row50_col0" class="data row50 col0" >Polynomial Threshold</td>
+      <td id="T_42138_row50_col1" class="data row50 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row51" class="row_heading level0 row51" >51</th>
+      <td id="T_42138_row51_col0" class="data row51 col0" >Group Features</td>
+      <td id="T_42138_row51_col1" class="data row51 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row52" class="row_heading level0 row52" >52</th>
+      <td id="T_42138_row52_col0" class="data row52 col0" >Feature Selection</td>
+      <td id="T_42138_row52_col1" class="data row52 col1" >True</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row53" class="row_heading level0 row53" >53</th>
+      <td id="T_42138_row53_col0" class="data row53 col0" >Feature Selection Method</td>
+      <td id="T_42138_row53_col1" class="data row53 col1" >classic</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row54" class="row_heading level0 row54" >54</th>
+      <td id="T_42138_row54_col0" class="data row54 col0" >Features Selection Threshold</td>
+      <td id="T_42138_row54_col1" class="data row54 col1" >0.800000</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row55" class="row_heading level0 row55" >55</th>
+      <td id="T_42138_row55_col0" class="data row55 col0" >Feature Interaction</td>
+      <td id="T_42138_row55_col1" class="data row55 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row56" class="row_heading level0 row56" >56</th>
+      <td id="T_42138_row56_col0" class="data row56 col0" >Feature Ratio</td>
+      <td id="T_42138_row56_col1" class="data row56 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row57" class="row_heading level0 row57" >57</th>
+      <td id="T_42138_row57_col0" class="data row57 col0" >Interaction Threshold</td>
+      <td id="T_42138_row57_col1" class="data row57 col1" >None</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row58" class="row_heading level0 row58" >58</th>
+      <td id="T_42138_row58_col0" class="data row58 col0" >Fix Imbalance</td>
+      <td id="T_42138_row58_col1" class="data row58 col1" >False</td>
+    </tr>
+    <tr>
+      <th id="T_42138_level0_row59" class="row_heading level0 row59" >59</th>
+      <td id="T_42138_row59_col0" class="data row59 col0" >Fix Imbalance Method</td>
+      <td id="T_42138_row59_col1" class="data row59 col1" >SMOTE</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Removed features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pd.DataFrame(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)).T
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>38</th>
+      <th>39</th>
+      <th>40</th>
+      <th>41</th>
+      <th>42</th>
+      <th>43</th>
+      <th>44</th>
+      <th>45</th>
+      <th>46</th>
+      <th>47</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>lesion_dwi</td>
+      <td>original_glcm_Idn_adc</td>
+      <td>original_glcm_Autocorrelation_hbv</td>
+      <td>original_glcm_JointEnergy_adc</td>
+      <td>original_glcm_JointEntropy_hbv</td>
+      <td>original_glcm_Idn_hbv</td>
+      <td>original_glcm_DifferenceEntropy_hbv</td>
+      <td>original_firstorder_Variance_adc</td>
+      <td>original_glcm_InverseVariance_hbv</td>
+      <td>original_glcm_DifferenceAverage_adc</td>
+      <td>...</td>
+      <td>original_glcm_SumSquares_hbv</td>
+      <td>original_glcm_ClusterProminence_hbv</td>
+      <td>original_glcm_JointEnergy_hbv</td>
+      <td>original_glcm_Contrast_adc</td>
+      <td>original_glcm_SumEntropy_adc</td>
+      <td>original_firstorder_RootMeanSquared_hbv</td>
+      <td>original_glcm_ClusterTendency_hbv</td>
+      <td>original_glcm_SumEntropy_hbv</td>
+      <td>original_glcm_JointEntropy_adc</td>
+      <td>original_firstorder_Maximum_hbv</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 48 columns</p>
+</div></div></div>
+</div>
+<p>Selected features</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>pd.DataFrame(set(get_config(&#39;X_train&#39;).columns)).T
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>...</th>
+      <th>27</th>
+      <th>28</th>
+      <th>29</th>
+      <th>30</th>
+      <th>31</th>
+      <th>32</th>
+      <th>33</th>
+      <th>34</th>
+      <th>35</th>
+      <th>36</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>original_firstorder_Range_adc</td>
+      <td>original_firstorder_InterquartileRange_adc</td>
+      <td>original_firstorder_Skewness_hbv</td>
+      <td>original_firstorder_Median_hbv</td>
+      <td>original_firstorder_MeanAbsoluteDeviation_hbv</td>
+      <td>original_glcm_Imc2_hbv</td>
+      <td>original_glcm_ClusterShade_hbv</td>
+      <td>original_firstorder_TotalEnergy_hbv</td>
+      <td>original_glcm_Imc1_adc</td>
+      <td>original_firstorder_Uniformity_adc</td>
+      <td>...</td>
+      <td>original_glcm_ClusterShade_adc</td>
+      <td>original_glcm_MCC_hbv</td>
+      <td>original_firstorder_Skewness_adc</td>
+      <td>original_firstorder_Median_adc</td>
+      <td>original_glcm_Idmn_adc</td>
+      <td>original_firstorder_Range_hbv</td>
+      <td>original_glcm_MCC_adc</td>
+      <td>original_firstorder_InterquartileRange_hbv</td>
+      <td>original_glcm_InverseVariance_adc</td>
+      <td>original_glcm_DifferenceVariance_adc</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 37 columns</p>
+</div></div></div>
+</div>
+<p>Select models</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_c9a6f_ th {
+  text-align: left;
+}
+#T_c9a6f_row0_col0, #T_c9a6f_row0_col3, #T_c9a6f_row0_col4, #T_c9a6f_row0_col5, #T_c9a6f_row1_col0, #T_c9a6f_row1_col3, #T_c9a6f_row1_col4, #T_c9a6f_row1_col5, #T_c9a6f_row1_col6, #T_c9a6f_row1_col7, #T_c9a6f_row2_col0, #T_c9a6f_row2_col1, #T_c9a6f_row2_col3, #T_c9a6f_row2_col4, #T_c9a6f_row2_col6, #T_c9a6f_row2_col7, #T_c9a6f_row3_col0, #T_c9a6f_row3_col1, #T_c9a6f_row3_col3, #T_c9a6f_row3_col4, #T_c9a6f_row3_col5, #T_c9a6f_row3_col6, #T_c9a6f_row3_col7, #T_c9a6f_row4_col0, #T_c9a6f_row4_col1, #T_c9a6f_row4_col3, #T_c9a6f_row4_col4, #T_c9a6f_row4_col5, #T_c9a6f_row4_col6, #T_c9a6f_row4_col7, #T_c9a6f_row5_col0, #T_c9a6f_row5_col1, #T_c9a6f_row5_col3, #T_c9a6f_row5_col4, #T_c9a6f_row5_col5, #T_c9a6f_row5_col6, #T_c9a6f_row5_col7, #T_c9a6f_row6_col0, #T_c9a6f_row6_col1, #T_c9a6f_row6_col3, #T_c9a6f_row6_col4, #T_c9a6f_row6_col5, #T_c9a6f_row6_col6, #T_c9a6f_row6_col7, #T_c9a6f_row7_col0, #T_c9a6f_row7_col1, #T_c9a6f_row7_col3, #T_c9a6f_row7_col4, #T_c9a6f_row7_col5, #T_c9a6f_row7_col6, #T_c9a6f_row7_col7, #T_c9a6f_row8_col0, #T_c9a6f_row8_col1, #T_c9a6f_row8_col3, #T_c9a6f_row8_col4, #T_c9a6f_row8_col5, #T_c9a6f_row8_col6, #T_c9a6f_row8_col7, #T_c9a6f_row9_col0, #T_c9a6f_row9_col1, #T_c9a6f_row9_col5, #T_c9a6f_row9_col6, #T_c9a6f_row9_col7, #T_c9a6f_row10_col0, #T_c9a6f_row10_col1, #T_c9a6f_row10_col3, #T_c9a6f_row10_col4, #T_c9a6f_row10_col5, #T_c9a6f_row10_col6, #T_c9a6f_row10_col7, #T_c9a6f_row11_col0, #T_c9a6f_row11_col1, #T_c9a6f_row11_col3, #T_c9a6f_row11_col4, #T_c9a6f_row11_col5, #T_c9a6f_row11_col6, #T_c9a6f_row11_col7, #T_c9a6f_row12_col0, #T_c9a6f_row12_col1, #T_c9a6f_row12_col3, #T_c9a6f_row12_col4, #T_c9a6f_row12_col5, #T_c9a6f_row12_col6, #T_c9a6f_row12_col7, #T_c9a6f_row13_col0, #T_c9a6f_row13_col1, #T_c9a6f_row13_col3, #T_c9a6f_row13_col4, #T_c9a6f_row13_col5, #T_c9a6f_row13_col6, #T_c9a6f_row13_col7 {
+  text-align: left;
+}
+#T_c9a6f_row0_col1, #T_c9a6f_row0_col2, #T_c9a6f_row0_col6, #T_c9a6f_row0_col7, #T_c9a6f_row1_col1, #T_c9a6f_row1_col2, #T_c9a6f_row2_col2, #T_c9a6f_row2_col5, #T_c9a6f_row3_col2, #T_c9a6f_row4_col2, #T_c9a6f_row5_col2, #T_c9a6f_row6_col2, #T_c9a6f_row7_col2, #T_c9a6f_row8_col2, #T_c9a6f_row9_col2, #T_c9a6f_row9_col3, #T_c9a6f_row9_col4, #T_c9a6f_row10_col2, #T_c9a6f_row11_col2, #T_c9a6f_row12_col2, #T_c9a6f_row13_col2 {
+  text-align: left;
+  background-color: yellow;
+}
+#T_c9a6f_row0_col8, #T_c9a6f_row1_col8, #T_c9a6f_row2_col8, #T_c9a6f_row3_col8, #T_c9a6f_row4_col8, #T_c9a6f_row5_col8, #T_c9a6f_row6_col8, #T_c9a6f_row7_col8, #T_c9a6f_row8_col8, #T_c9a6f_row9_col8, #T_c9a6f_row10_col8, #T_c9a6f_row11_col8, #T_c9a6f_row13_col8 {
+  text-align: left;
+  background-color: lightgrey;
+}
+#T_c9a6f_row12_col8 {
+  text-align: left;
+  background-color: yellow;
+  background-color: lightgrey;
+}
+</style>
+<table id="T_c9a6f_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Model</th>
+      <th class="col_heading level0 col1" >Accuracy</th>
+      <th class="col_heading level0 col2" >AUC</th>
+      <th class="col_heading level0 col3" >Recall</th>
+      <th class="col_heading level0 col4" >Prec.</th>
+      <th class="col_heading level0 col5" >F1</th>
+      <th class="col_heading level0 col6" >Kappa</th>
+      <th class="col_heading level0 col7" >MCC</th>
+      <th class="col_heading level0 col8" >TT (Sec)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_c9a6f_level0_row0" class="row_heading level0 row0" >ridge</th>
+      <td id="T_c9a6f_row0_col0" class="data row0 col0" >Ridge Classifier</td>
+      <td id="T_c9a6f_row0_col1" class="data row0 col1" >0.7684</td>
+      <td id="T_c9a6f_row0_col2" class="data row0 col2" >0.0000</td>
+      <td id="T_c9a6f_row0_col3" class="data row0 col3" >0.3859</td>
+      <td id="T_c9a6f_row0_col4" class="data row0 col4" >0.7068</td>
+      <td id="T_c9a6f_row0_col5" class="data row0 col5" >0.7319</td>
+      <td id="T_c9a6f_row0_col6" class="data row0 col6" >0.5698</td>
+      <td id="T_c9a6f_row0_col7" class="data row0 col7" >0.5782</td>
+      <td id="T_c9a6f_row0_col8" class="data row0 col8" >0.0040</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row1" class="row_heading level0 row1" >et</th>
+      <td id="T_c9a6f_row1_col0" class="data row1 col0" >Extra Trees Classifier</td>
+      <td id="T_c9a6f_row1_col1" class="data row1 col1" >0.7684</td>
+      <td id="T_c9a6f_row1_col2" class="data row1 col2" >0.0000</td>
+      <td id="T_c9a6f_row1_col3" class="data row1 col3" >0.3825</td>
+      <td id="T_c9a6f_row1_col4" class="data row1 col4" >0.7143</td>
+      <td id="T_c9a6f_row1_col5" class="data row1 col5" >0.7321</td>
+      <td id="T_c9a6f_row1_col6" class="data row1 col6" >0.5621</td>
+      <td id="T_c9a6f_row1_col7" class="data row1 col7" >0.5769</td>
+      <td id="T_c9a6f_row1_col8" class="data row1 col8" >0.1700</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row2" class="row_heading level0 row2" >lr</th>
+      <td id="T_c9a6f_row2_col0" class="data row2 col0" >Logistic Regression</td>
+      <td id="T_c9a6f_row2_col1" class="data row2 col1" >0.7640</td>
+      <td id="T_c9a6f_row2_col2" class="data row2 col2" >0.0000</td>
+      <td id="T_c9a6f_row2_col3" class="data row2 col3" >0.4111</td>
+      <td id="T_c9a6f_row2_col4" class="data row2 col4" >0.7337</td>
+      <td id="T_c9a6f_row2_col5" class="data row2 col5" >0.7418</td>
+      <td id="T_c9a6f_row2_col6" class="data row2 col6" >0.5676</td>
+      <td id="T_c9a6f_row2_col7" class="data row2 col7" >0.5721</td>
+      <td id="T_c9a6f_row2_col8" class="data row2 col8" >0.0230</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row3" class="row_heading level0 row3" >rf</th>
+      <td id="T_c9a6f_row3_col0" class="data row3 col0" >Random Forest Classifier</td>
+      <td id="T_c9a6f_row3_col1" class="data row3 col1" >0.7563</td>
+      <td id="T_c9a6f_row3_col2" class="data row3 col2" >0.0000</td>
+      <td id="T_c9a6f_row3_col3" class="data row3 col3" >0.3787</td>
+      <td id="T_c9a6f_row3_col4" class="data row3 col4" >0.7039</td>
+      <td id="T_c9a6f_row3_col5" class="data row3 col5" >0.7221</td>
+      <td id="T_c9a6f_row3_col6" class="data row3 col6" >0.5434</td>
+      <td id="T_c9a6f_row3_col7" class="data row3 col7" >0.5552</td>
+      <td id="T_c9a6f_row3_col8" class="data row3 col8" >0.1910</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row4" class="row_heading level0 row4" >lightgbm</th>
+      <td id="T_c9a6f_row4_col0" class="data row4 col0" >Light Gradient Boosting Machine</td>
+      <td id="T_c9a6f_row4_col1" class="data row4 col1" >0.7552</td>
+      <td id="T_c9a6f_row4_col2" class="data row4 col2" >0.0000</td>
+      <td id="T_c9a6f_row4_col3" class="data row4 col3" >0.3925</td>
+      <td id="T_c9a6f_row4_col4" class="data row4 col4" >0.7278</td>
+      <td id="T_c9a6f_row4_col5" class="data row4 col5" >0.7303</td>
+      <td id="T_c9a6f_row4_col6" class="data row4 col6" >0.5445</td>
+      <td id="T_c9a6f_row4_col7" class="data row4 col7" >0.5554</td>
+      <td id="T_c9a6f_row4_col8" class="data row4 col8" >0.2450</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row5" class="row_heading level0 row5" >gbc</th>
+      <td id="T_c9a6f_row5_col0" class="data row5 col0" >Gradient Boosting Classifier</td>
+      <td id="T_c9a6f_row5_col1" class="data row5 col1" >0.7519</td>
+      <td id="T_c9a6f_row5_col2" class="data row5 col2" >0.0000</td>
+      <td id="T_c9a6f_row5_col3" class="data row5 col3" >0.3899</td>
+      <td id="T_c9a6f_row5_col4" class="data row5 col4" >0.7384</td>
+      <td id="T_c9a6f_row5_col5" class="data row5 col5" >0.7341</td>
+      <td id="T_c9a6f_row5_col6" class="data row5 col6" >0.5425</td>
+      <td id="T_c9a6f_row5_col7" class="data row5 col7" >0.5528</td>
+      <td id="T_c9a6f_row5_col8" class="data row5 col8" >0.6860</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row6" class="row_heading level0 row6" >knn</th>
+      <td id="T_c9a6f_row6_col0" class="data row6 col0" >K Neighbors Classifier</td>
+      <td id="T_c9a6f_row6_col1" class="data row6 col1" >0.7299</td>
+      <td id="T_c9a6f_row6_col2" class="data row6 col2" >0.0000</td>
+      <td id="T_c9a6f_row6_col3" class="data row6 col3" >0.4094</td>
+      <td id="T_c9a6f_row6_col4" class="data row6 col4" >0.7122</td>
+      <td id="T_c9a6f_row6_col5" class="data row6 col5" >0.7163</td>
+      <td id="T_c9a6f_row6_col6" class="data row6 col6" >0.5137</td>
+      <td id="T_c9a6f_row6_col7" class="data row6 col7" >0.5189</td>
+      <td id="T_c9a6f_row6_col8" class="data row6 col8" >0.0490</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row7" class="row_heading level0 row7" >lda</th>
+      <td id="T_c9a6f_row7_col0" class="data row7 col0" >Linear Discriminant Analysis</td>
+      <td id="T_c9a6f_row7_col1" class="data row7 col1" >0.7234</td>
+      <td id="T_c9a6f_row7_col2" class="data row7 col2" >0.0000</td>
+      <td id="T_c9a6f_row7_col3" class="data row7 col3" >0.5455</td>
+      <td id="T_c9a6f_row7_col4" class="data row7 col4" >0.7669</td>
+      <td id="T_c9a6f_row7_col5" class="data row7 col5" >0.7356</td>
+      <td id="T_c9a6f_row7_col6" class="data row7 col6" >0.5402</td>
+      <td id="T_c9a6f_row7_col7" class="data row7 col7" >0.5478</td>
+      <td id="T_c9a6f_row7_col8" class="data row7 col8" >0.0050</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row8" class="row_heading level0 row8" >svm</th>
+      <td id="T_c9a6f_row8_col0" class="data row8 col0" >SVM - Linear Kernel</td>
+      <td id="T_c9a6f_row8_col1" class="data row8 col1" >0.7211</td>
+      <td id="T_c9a6f_row8_col2" class="data row8 col2" >0.0000</td>
+      <td id="T_c9a6f_row8_col3" class="data row8 col3" >0.4422</td>
+      <td id="T_c9a6f_row8_col4" class="data row8 col4" >0.7223</td>
+      <td id="T_c9a6f_row8_col5" class="data row8 col5" >0.7158</td>
+      <td id="T_c9a6f_row8_col6" class="data row8 col6" >0.5126</td>
+      <td id="T_c9a6f_row8_col7" class="data row8 col7" >0.5173</td>
+      <td id="T_c9a6f_row8_col8" class="data row8 col8" >0.0250</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row9" class="row_heading level0 row9" >nb</th>
+      <td id="T_c9a6f_row9_col0" class="data row9 col0" >Naive Bayes</td>
+      <td id="T_c9a6f_row9_col1" class="data row9 col1" >0.7113</td>
+      <td id="T_c9a6f_row9_col2" class="data row9 col2" >0.0000</td>
+      <td id="T_c9a6f_row9_col3" class="data row9 col3" >0.5814</td>
+      <td id="T_c9a6f_row9_col4" class="data row9 col4" >0.7742</td>
+      <td id="T_c9a6f_row9_col5" class="data row9 col5" >0.7341</td>
+      <td id="T_c9a6f_row9_col6" class="data row9 col6" >0.5316</td>
+      <td id="T_c9a6f_row9_col7" class="data row9 col7" >0.5406</td>
+      <td id="T_c9a6f_row9_col8" class="data row9 col8" >0.0040</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row10" class="row_heading level0 row10" >dt</th>
+      <td id="T_c9a6f_row10_col0" class="data row10 col0" >Decision Tree Classifier</td>
+      <td id="T_c9a6f_row10_col1" class="data row10 col1" >0.6992</td>
+      <td id="T_c9a6f_row10_col2" class="data row10 col2" >0.0000</td>
+      <td id="T_c9a6f_row10_col3" class="data row10 col3" >0.3425</td>
+      <td id="T_c9a6f_row10_col4" class="data row10 col4" >0.6740</td>
+      <td id="T_c9a6f_row10_col5" class="data row10 col5" >0.6829</td>
+      <td id="T_c9a6f_row10_col6" class="data row10 col6" >0.4510</td>
+      <td id="T_c9a6f_row10_col7" class="data row10 col7" >0.4561</td>
+      <td id="T_c9a6f_row10_col8" class="data row10 col8" >0.0060</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row11" class="row_heading level0 row11" >ada</th>
+      <td id="T_c9a6f_row11_col0" class="data row11 col0" >Ada Boost Classifier</td>
+      <td id="T_c9a6f_row11_col1" class="data row11 col1" >0.5918</td>
+      <td id="T_c9a6f_row11_col2" class="data row11 col2" >0.0000</td>
+      <td id="T_c9a6f_row11_col3" class="data row11 col3" >0.3059</td>
+      <td id="T_c9a6f_row11_col4" class="data row11 col4" >0.6026</td>
+      <td id="T_c9a6f_row11_col5" class="data row11 col5" >0.5729</td>
+      <td id="T_c9a6f_row11_col6" class="data row11 col6" >0.2802</td>
+      <td id="T_c9a6f_row11_col7" class="data row11 col7" >0.2978</td>
+      <td id="T_c9a6f_row11_col8" class="data row11 col8" >0.0430</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row12" class="row_heading level0 row12" >dummy</th>
+      <td id="T_c9a6f_row12_col0" class="data row12 col0" >Dummy Classifier</td>
+      <td id="T_c9a6f_row12_col1" class="data row12 col1" >0.5324</td>
+      <td id="T_c9a6f_row12_col2" class="data row12 col2" >0.0000</td>
+      <td id="T_c9a6f_row12_col3" class="data row12 col3" >0.2250</td>
+      <td id="T_c9a6f_row12_col4" class="data row12 col4" >0.2835</td>
+      <td id="T_c9a6f_row12_col5" class="data row12 col5" >0.3699</td>
+      <td id="T_c9a6f_row12_col6" class="data row12 col6" >0.0000</td>
+      <td id="T_c9a6f_row12_col7" class="data row12 col7" >0.0000</td>
+      <td id="T_c9a6f_row12_col8" class="data row12 col8" >0.0030</td>
+    </tr>
+    <tr>
+      <th id="T_c9a6f_level0_row13" class="row_heading level0 row13" >qda</th>
+      <td id="T_c9a6f_row13_col0" class="data row13 col0" >Quadratic Discriminant Analysis</td>
+      <td id="T_c9a6f_row13_col1" class="data row13 col1" >0.0088</td>
+      <td id="T_c9a6f_row13_col2" class="data row13 col2" >0.0000</td>
+      <td id="T_c9a6f_row13_col3" class="data row13 col3" >0.1850</td>
+      <td id="T_c9a6f_row13_col4" class="data row13 col4" >0.0001</td>
+      <td id="T_c9a6f_row13_col5" class="data row13 col5" >0.0002</td>
+      <td id="T_c9a6f_row13_col6" class="data row13 col6" >0.0000</td>
+      <td id="T_c9a6f_row13_col7" class="data row13 col7" >0.0000</td>
+      <td id="T_c9a6f_row13_col8" class="data row13 col8" >0.0040</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i) for i in top3]
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_3f4de_row10_col0, #T_3f4de_row10_col1, #T_3f4de_row10_col2, #T_3f4de_row10_col3, #T_3f4de_row10_col4, #T_3f4de_row10_col5, #T_3f4de_row10_col6 {
+  background: yellow;
+}
+</style>
+<table id="T_3f4de_">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th class="col_heading level0 col0" >Accuracy</th>
+      <th class="col_heading level0 col1" >AUC</th>
+      <th class="col_heading level0 col2" >Recall</th>
+      <th class="col_heading level0 col3" >Prec.</th>
+      <th class="col_heading level0 col4" >F1</th>
+      <th class="col_heading level0 col5" >Kappa</th>
+      <th class="col_heading level0 col6" >MCC</th>
+    </tr>
+    <tr>
+      <th class="index_name level0" >Fold</th>
+      <th class="blank col0" >&nbsp;</th>
+      <th class="blank col1" >&nbsp;</th>
+      <th class="blank col2" >&nbsp;</th>
+      <th class="blank col3" >&nbsp;</th>
+      <th class="blank col4" >&nbsp;</th>
+      <th class="blank col5" >&nbsp;</th>
+      <th class="blank col6" >&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_3f4de_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_3f4de_row0_col0" class="data row0 col0" >0.7609</td>
+      <td id="T_3f4de_row0_col1" class="data row0 col1" >0.0000</td>
+      <td id="T_3f4de_row0_col2" class="data row0 col2" >0.3433</td>
+      <td id="T_3f4de_row0_col3" class="data row0 col3" >0.6934</td>
+      <td id="T_3f4de_row0_col4" class="data row0 col4" >0.7210</td>
+      <td id="T_3f4de_row0_col5" class="data row0 col5" >0.5629</td>
+      <td id="T_3f4de_row0_col6" class="data row0 col6" >0.5752</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_3f4de_row1_col0" class="data row1 col0" >0.7912</td>
+      <td id="T_3f4de_row1_col1" class="data row1 col1" >0.0000</td>
+      <td id="T_3f4de_row1_col2" class="data row1 col2" >0.5222</td>
+      <td id="T_3f4de_row1_col3" class="data row1 col3" >0.7779</td>
+      <td id="T_3f4de_row1_col4" class="data row1 col4" >0.7832</td>
+      <td id="T_3f4de_row1_col5" class="data row1 col5" >0.6206</td>
+      <td id="T_3f4de_row1_col6" class="data row1 col6" >0.6215</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_3f4de_row2_col0" class="data row2 col0" >0.8022</td>
+      <td id="T_3f4de_row2_col1" class="data row2 col1" >0.0000</td>
+      <td id="T_3f4de_row2_col2" class="data row2 col2" >0.5318</td>
+      <td id="T_3f4de_row2_col3" class="data row2 col3" >0.7938</td>
+      <td id="T_3f4de_row2_col4" class="data row2 col4" >0.7931</td>
+      <td id="T_3f4de_row2_col5" class="data row2 col5" >0.6420</td>
+      <td id="T_3f4de_row2_col6" class="data row2 col6" >0.6447</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_3f4de_row3_col0" class="data row3 col0" >0.7473</td>
+      <td id="T_3f4de_row3_col1" class="data row3 col1" >0.0000</td>
+      <td id="T_3f4de_row3_col2" class="data row3 col2" >0.4611</td>
+      <td id="T_3f4de_row3_col3" class="data row3 col3" >0.7341</td>
+      <td id="T_3f4de_row3_col4" class="data row3 col4" >0.7313</td>
+      <td id="T_3f4de_row3_col5" class="data row3 col5" >0.5337</td>
+      <td id="T_3f4de_row3_col6" class="data row3 col6" >0.5378</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_3f4de_row4_col0" class="data row4 col0" >0.6923</td>
+      <td id="T_3f4de_row4_col1" class="data row4 col1" >0.0000</td>
+      <td id="T_3f4de_row4_col2" class="data row4 col2" >0.3783</td>
+      <td id="T_3f4de_row4_col3" class="data row4 col3" >0.6670</td>
+      <td id="T_3f4de_row4_col4" class="data row4 col4" >0.6790</td>
+      <td id="T_3f4de_row4_col5" class="data row4 col5" >0.4437</td>
+      <td id="T_3f4de_row4_col6" class="data row4 col6" >0.4450</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_3f4de_row5_col0" class="data row5 col0" >0.8352</td>
+      <td id="T_3f4de_row5_col1" class="data row5 col1" >0.0000</td>
+      <td id="T_3f4de_row5_col2" class="data row5 col2" >0.5404</td>
+      <td id="T_3f4de_row5_col3" class="data row5 col3" >0.8358</td>
+      <td id="T_3f4de_row5_col4" class="data row5 col4" >0.8218</td>
+      <td id="T_3f4de_row5_col5" class="data row5 col5" >0.7010</td>
+      <td id="T_3f4de_row5_col6" class="data row5 col6" >0.7053</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_3f4de_row6_col0" class="data row6 col0" >0.7143</td>
+      <td id="T_3f4de_row6_col1" class="data row6 col1" >0.0000</td>
+      <td id="T_3f4de_row6_col2" class="data row6 col2" >0.3172</td>
+      <td id="T_3f4de_row6_col3" class="data row6 col3" >0.6581</td>
+      <td id="T_3f4de_row6_col4" class="data row6 col4" >0.6850</td>
+      <td id="T_3f4de_row6_col5" class="data row6 col5" >0.4757</td>
+      <td id="T_3f4de_row6_col6" class="data row6 col6" >0.4794</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_3f4de_row7_col0" class="data row7 col0" >0.7582</td>
+      <td id="T_3f4de_row7_col1" class="data row7 col1" >0.0000</td>
+      <td id="T_3f4de_row7_col2" class="data row7 col2" >0.3599</td>
+      <td id="T_3f4de_row7_col3" class="data row7 col3" >0.7272</td>
+      <td id="T_3f4de_row7_col4" class="data row7 col4" >0.7338</td>
+      <td id="T_3f4de_row7_col5" class="data row7 col5" >0.5550</td>
+      <td id="T_3f4de_row7_col6" class="data row7 col6" >0.5597</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_3f4de_row8_col0" class="data row8 col0" >0.7912</td>
+      <td id="T_3f4de_row8_col1" class="data row8 col1" >0.0000</td>
+      <td id="T_3f4de_row8_col2" class="data row8 col2" >0.3532</td>
+      <td id="T_3f4de_row8_col3" class="data row8 col3" >0.7543</td>
+      <td id="T_3f4de_row8_col4" class="data row8 col4" >0.7723</td>
+      <td id="T_3f4de_row8_col5" class="data row8 col5" >0.6259</td>
+      <td id="T_3f4de_row8_col6" class="data row8 col6" >0.6272</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_3f4de_row9_col0" class="data row9 col0" >0.6813</td>
+      <td id="T_3f4de_row9_col1" class="data row9 col1" >0.0000</td>
+      <td id="T_3f4de_row9_col2" class="data row9 col2" >0.2995</td>
+      <td id="T_3f4de_row9_col3" class="data row9 col3" >0.6282</td>
+      <td id="T_3f4de_row9_col4" class="data row9 col4" >0.6529</td>
+      <td id="T_3f4de_row9_col5" class="data row9 col5" >0.4098</td>
+      <td id="T_3f4de_row9_col6" class="data row9 col6" >0.4145</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row10" class="row_heading level0 row10" >Mean</th>
+      <td id="T_3f4de_row10_col0" class="data row10 col0" >0.7574</td>
+      <td id="T_3f4de_row10_col1" class="data row10 col1" >0.0000</td>
+      <td id="T_3f4de_row10_col2" class="data row10 col2" >0.4107</td>
+      <td id="T_3f4de_row10_col3" class="data row10 col3" >0.7270</td>
+      <td id="T_3f4de_row10_col4" class="data row10 col4" >0.7374</td>
+      <td id="T_3f4de_row10_col5" class="data row10 col5" >0.5570</td>
+      <td id="T_3f4de_row10_col6" class="data row10 col6" >0.5610</td>
+    </tr>
+    <tr>
+      <th id="T_3f4de_level0_row11" class="row_heading level0 row11" >Std</th>
+      <td id="T_3f4de_row11_col0" class="data row11 col0" >0.0473</td>
+      <td id="T_3f4de_row11_col1" class="data row11 col1" >0.0000</td>
+      <td id="T_3f4de_row11_col2" class="data row11 col2" >0.0889</td>
+      <td id="T_3f4de_row11_col3" class="data row11 col3" >0.0624</td>
+      <td id="T_3f4de_row11_col4" class="data row11 col4" >0.0521</td>
+      <td id="T_3f4de_row11_col5" class="data row11 col5" >0.0886</td>
+      <td id="T_3f4de_row11_col6" class="data row11 col6" >0.0884</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;Accuracy&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>RidgeClassifier(alpha=7.04, class_weight=None, copy_X=True, fit_intercept=True,
+                max_iter=None, normalize=False, random_state=1230,
+                solver=&#39;auto&#39;, tol=0.001)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;learning&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_40_0.png" src="../_images/predictive_models_40_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;vc&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_41_0.png" src="../_images/predictive_models_41_0.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try: 
+    plot_model(best_model, plot = &#39;feature_all&#39;)
+except:
+    print(&#39;No feature importance plot available&#39;)
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/predictive_models_42_0.png" src="../_images/predictive_models_42_0.png" />
+</div>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
