@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>AutoML Predictive models for clinical significance / PI-RADS &#8212; AI4AR Radiomics</title>
+    <title>Predictive models for clinical significance / PI-RADS (pycaret) &#8212; AI4AR Radiomics</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -51,12 +51,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <link rel="canonical" href="https://piotrsobecki.github.io/ai4ar-radiomics/book/predictive_models.html" />
+    <link rel="canonical" href="https://piotrsobecki.github.io/ai4ar-radiomics/book/predictive_models_pycaret.html" />
     <link rel="shortcut icon" href="../_static/fav.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Predictive models for clinical significance" href="predictive_models_factors.html" />
-    <link rel="prev" title="Predictive models for imaging features" href="predictive_models_imaging_features.html" />
+    <link rel="next" title="Predictive models for imaging features" href="predictive_models_imaging_features.html" />
+    <link rel="prev" title="Radiomics Features Extraction" href="radiomics_extraction.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -120,13 +120,18 @@ const thebe_selector_output = ".output, .cell_output"
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="predictive_models_imaging_features.html">
-   Predictive models for imaging features
+  <a class="reference internal" href="radiomics_extraction.html">
+   Radiomics Features Extraction
   </a>
  </li>
  <li class="toctree-l1 current active">
   <a class="current reference internal" href="#">
-   AutoML Predictive models for clinical significance / PI-RADS
+   Predictive models for clinical significance / PI-RADS (pycaret)
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="predictive_models_imaging_features.html">
+   Predictive models for imaging features
   </a>
  </li>
  <li class="toctree-l1">
@@ -198,7 +203,7 @@ title="Toggle navigation"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="https://mybinder.org/v2/gh/piotrsobecki/ai4ar-radiomics/master?urlpath=tree/book/predictive_models.ipynb"
+        <a href="https://mybinder.org/v2/gh/piotrsobecki/ai4ar-radiomics/master?urlpath=tree/book/predictive_models_pycaret.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -216,7 +221,7 @@ title="Launch on Binder"
       </li>
       
       <li>
-        <a href="https://colab.research.google.com/github/piotrsobecki/ai4ar-radiomics/blob/master/book/predictive_models.ipynb"
+        <a href="https://colab.research.google.com/github/piotrsobecki/ai4ar-radiomics/blob/master/book/predictive_models_pycaret.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -276,7 +281,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/issues/new?title=Issue%20on%20page%20%2Fbook/predictive_models.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/issues/new?title=Issue%20on%20page%20%2Fbook/predictive_models_pycaret.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -293,7 +298,7 @@ title="Open an issue"
       </li>
       
       <li>
-        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/edit/master/book/predictive_models.ipynb"
+        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/edit/master/book/predictive_models_pycaret.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -321,7 +326,7 @@ title="Edit this page"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/book/predictive_models.ipynb"
+        <a href="../_sources/book/predictive_models_pycaret.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -399,7 +404,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>AutoML Predictive models for clinical significance / PI-RADS</h1>
+                <h1>Predictive models for clinical significance / PI-RADS (pycaret)</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -429,8 +434,8 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="automl-predictive-models-for-clinical-significance-pi-rads">
-<h1>AutoML Predictive models for clinical significance / PI-RADS<a class="headerlink" href="#automl-predictive-models-for-clinical-significance-pi-rads" title="Permalink to this headline">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="predictive-models-for-clinical-significance-pi-rads-pycaret">
+<h1>Predictive models for clinical significance / PI-RADS (pycaret)<a class="headerlink" href="#predictive-models-for-clinical-significance-pi-rads-pycaret" title="Permalink to this headline">#</a></h1>
 <p>We will be exploring the use of radiomics for predicting the clinical significance of prostate lesions on mpMRI images.</p>
 <p>Our data consists of mpMRI images and annotations prepared by three radiologists, as well as clinical information and biopsy results with International Society of Urological Pathology (ISUP) Gleason grading for each lesion. The radiologists annotated the data with multiple imaging features for each lesion, using the assessment algorithm from the PI-RADS standard.</p>
 <p>To verify the hypotheses, we will be using a supervised learning algorithm to train a model on the mpMRI images and the biopsy results. We use extracted radiomics features and use cross-validation to assess the performance of the model, and visualize the results using a receiver operating characteristic (ROC) curve.</p>
@@ -457,22 +462,11 @@ title="Print to PDF"
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
-
-import pandas as pd # For saving the features
-from pycaret.classification import *
-
-
-import sys 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys 
 import os 
 from config import config # For reading the config files
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Setup the notebook
+
+# Setup the notebook
 %load_ext autoreload
 %autoreload 2
 
@@ -489,6 +483,16 @@ cfg = config(
     (&#39;json&#39;, &#39;config/config-ext.json&#39;, True),
     ignore_missing_paths = True
 )
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
+
+import pandas as pd # For saving the features
+from pycaret.classification import *
 </pre></div>
 </div>
 </div>
@@ -2045,7 +2049,7 @@ train[target] = train[target].astype(int)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_23_0.png" src="../_images/predictive_models_23_0.png" />
+<img alt="../_images/predictive_models_pycaret_23_0.png" src="../_images/predictive_models_pycaret_23_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2055,7 +2059,7 @@ train[target] = train[target].astype(int)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_24_0.png" src="../_images/predictive_models_24_0.png" />
+<img alt="../_images/predictive_models_pycaret_24_0.png" src="../_images/predictive_models_pycaret_24_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2065,7 +2069,7 @@ train[target] = train[target].astype(int)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_25_0.png" src="../_images/predictive_models_25_0.png" />
+<img alt="../_images/predictive_models_pycaret_25_0.png" src="../_images/predictive_models_pycaret_25_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -2078,7 +2082,7 @@ except:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_26_0.png" src="../_images/predictive_models_26_0.png" />
+<img alt="../_images/predictive_models_pycaret_26_0.png" src="../_images/predictive_models_pycaret_26_0.png" />
 </div>
 </div>
 </section>
@@ -3067,7 +3071,7 @@ train[target] = train[target].astype(int)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_40_0.png" src="../_images/predictive_models_40_0.png" />
+<img alt="../_images/predictive_models_pycaret_40_0.png" src="../_images/predictive_models_pycaret_40_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3077,7 +3081,7 @@ train[target] = train[target].astype(int)
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_41_0.png" src="../_images/predictive_models_41_0.png" />
+<img alt="../_images/predictive_models_pycaret_41_0.png" src="../_images/predictive_models_pycaret_41_0.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -3090,7 +3094,7 @@ except:
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/predictive_models_42_0.png" src="../_images/predictive_models_42_0.png" />
+<img alt="../_images/predictive_models_pycaret_42_0.png" src="../_images/predictive_models_pycaret_42_0.png" />
 </div>
 </div>
 </section>
@@ -3123,17 +3127,17 @@ except:
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="predictive_models_imaging_features.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="radiomics_extraction.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Predictive models for imaging features</p>
+            <p class="prev-next-title">Radiomics Features Extraction</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="predictive_models_factors.html" title="next page">
+    <a class='right-next' id="next-link" href="predictive_models_imaging_features.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Predictive models for clinical significance</p>
+        <p class="prev-next-title">Predictive models for imaging features</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

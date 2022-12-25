@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Methods &#8212; AI4AR Radiomics</title>
+    <title>Radiomics Features Extraction &#8212; AI4AR Radiomics</title>
     
   <!-- Loaded before other Sphinx assets -->
   <link href="../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
@@ -51,12 +51,12 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <link rel="canonical" href="https://piotrsobecki.github.io/ai4ar-radiomics/book/methods.html" />
+    <link rel="canonical" href="https://piotrsobecki.github.io/ai4ar-radiomics/book/radiomics_extraction.html" />
     <link rel="shortcut icon" href="../_static/fav.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data visualisation" href="data.html" />
-    <link rel="prev" title="AI4AR - Radiomics Study" href="../index.html" />
+    <link rel="next" title="Predictive models for clinical significance / PI-RADS (pycaret)" href="predictive_models_pycaret.html" />
+    <link rel="prev" title="Data visualisation" href="data.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
     
@@ -109,8 +109,8 @@ const thebe_selector_output = ".output, .cell_output"
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item active">
         <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
+ <li class="toctree-l1">
+  <a class="reference internal" href="methods.html">
    Methods
   </a>
  </li>
@@ -119,8 +119,8 @@ const thebe_selector_output = ".output, .cell_output"
    Data visualisation
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="radiomics_extraction.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    Radiomics Features Extraction
   </a>
  </li>
@@ -195,6 +195,53 @@ title="Toggle navigation"
         
     </div>
     <div class="header-article__right">
+<div class="menu-dropdown menu-dropdown-launch-buttons">
+  <button class="headerbtn menu-dropdown__trigger"
+      aria-label="Launch interactive content">
+      <i class="fas fa-rocket"></i>
+  </button>
+  <div class="menu-dropdown__content">
+    <ul>
+      <li>
+        <a href="https://mybinder.org/v2/gh/piotrsobecki/ai4ar-radiomics/master?urlpath=tree/book/radiomics_extraction.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Binder"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_binder.svg">
+  </span>
+<span class="headerbtn__text-container">Binder</span>
+</a>
+
+      </li>
+      
+      <li>
+        <a href="https://colab.research.google.com/github/piotrsobecki/ai4ar-radiomics/blob/master/book/radiomics_extraction.ipynb"
+   class="headerbtn"
+   data-toggle="tooltip"
+data-placement="left"
+title="Launch on Colab"
+>
+  
+
+<span class="headerbtn__icon-container">
+  
+    <img src="../_static/images/logo_colab.png">
+  </span>
+<span class="headerbtn__text-container">Colab</span>
+</a>
+
+      </li>
+      
+    </ul>
+  </div>
+</div>
+
 <button onclick="toggleFullScreen()"
   class="headerbtn"
   data-toggle="tooltip"
@@ -234,7 +281,7 @@ title="Source repository"
       </li>
       
       <li>
-        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/issues/new?title=Issue%20on%20page%20%2Fbook/methods.html&body=Your%20issue%20content%20here."
+        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/issues/new?title=Issue%20on%20page%20%2Fbook/radiomics_extraction.html&body=Your%20issue%20content%20here."
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -251,7 +298,7 @@ title="Open an issue"
       </li>
       
       <li>
-        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/edit/master/book/methods.md"
+        <a href="https://github.com/piotrsobecki/ai4ar-radiomics/edit/master/book/radiomics_extraction.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -279,7 +326,7 @@ title="Edit this page"
   <div class="menu-dropdown__content">
     <ul>
       <li>
-        <a href="../_sources/book/methods.md"
+        <a href="../_sources/book/radiomics_extraction.ipynb"
    class="headerbtn"
    data-toggle="tooltip"
 data-placement="left"
@@ -290,7 +337,7 @@ title="Download source file"
 <span class="headerbtn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="headerbtn__text-container">.md</span>
+<span class="headerbtn__text-container">.ipynb</span>
 </a>
 
       </li>
@@ -339,9 +386,26 @@ title="Print to PDF"
     <nav id="bd-toc-nav" aria-label="Page">
         <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#hypotheses">
-   Hypotheses
+  <a class="reference internal nav-link" href="#dataset-initialization">
+   Dataset initialization
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#feature-extraction">
+   Feature Extraction
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#construct-the-extractors">
+     Construct the extractors
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#extract-the-radiomics-feature">
+     Extract the radiomics feature
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -352,7 +416,7 @@ title="Print to PDF"
         <div class="col pl-md-3 pl-lg-5 content-container">
             <!-- Table of contents that is only displayed when printing the page -->
             <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Methods</h1>
+                <h1>Radiomics Features Extraction</h1>
                 <!-- Table of contents -->
                 <div id="print-main-content">
                     <div id="jb-print-toc">
@@ -363,9 +427,26 @@ title="Print to PDF"
                         <nav aria-label="Page">
                             <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#hypotheses">
-   Hypotheses
+  <a class="reference internal nav-link" href="#dataset-initialization">
+   Dataset initialization
   </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#feature-extraction">
+   Feature Extraction
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#construct-the-extractors">
+     Construct the extractors
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#extract-the-radiomics-feature">
+     Extract the radiomics feature
+    </a>
+   </li>
+  </ul>
  </li>
 </ul>
 
@@ -377,44 +458,162 @@ title="Print to PDF"
                 
               <div>
                 
-  <section class="tex2jax_ignore mathjax_ignore" id="methods">
-<h1>Methods<a class="headerlink" href="#methods" title="Permalink to this headline">#</a></h1>
-<p>We collected mpMRI imaging data from the Dolnośląskie Centrum Onkologii, Pulmonologii i Hematologii in Wrocław, Poland. The data included segmentation masks of the prostate gland and detected lesions, as well as clinical information and biopsy results with International Society of Urological Pathology (ISUP) Gleason grading for each lesion. Three experienced radiologists independently annotated the data with multiple imaging features for each lesion, using the assessment algorithm from the PI-RADS standard.</p>
-<section id="hypotheses">
-<h2>Hypotheses<a class="headerlink" href="#hypotheses" title="Permalink to this headline">#</a></h2>
-<ol class="simple">
-<li><p><strong>Predictive models for imaging features</strong></p>
-<ol class="simple">
-<li><p>Hypothesis: Radiomics features extracted from mpMRI images can predict the imaging features of prostate lesions as assessed by radiologists.</p></li>
-<li><p>Hypothesis: Radiomics features can be used to predict the PI-RADS scores.</p></li>
-<li><p>Hypothesis: Radiomics features can enhance the PI-RADS algorithm to improve the assessment specificity.</p></li>
-</ol>
-</li>
-<li><p><strong>Predictive models for clinical significance</strong></p>
-<ol class="simple">
-<li><p>Hypothesis: Radiomics features extracted from mpMRI images can predict the clinical significance of prostate lesions as determined by biopsy results.</p></li>
-<li><p>Hypothesis: The combination of radiomics features and manually assessed imaging features improves the assessment of lesion clinical significance.</p></li>
-</ol>
-</li>
-<li><p><strong>Factors influencing the performance of predictive models for clinical significance</strong></p>
-<ol class="simple">
-<li><p>Hypothesis (factor): the imaging plane of the mpMRI images.</p></li>
-<li><p>Hypothesis (factor): the MRI sequence.</p></li>
-<li><p>Hypothesis (factor): the Gleason grade of the biopsy results.</p></li>
-<li><p>Hypothesis (factor): the size of the lesion.</p></li>
-<li><p>Hypothesis (factor): the location of the lesion within the prostate gland.</p></li>
-<li><p>Hypothesis (factor): the presence or absence of other conditions, such as prostate inflammation or benign prostatic hyperplasia.</p></li>
-<li><p>Hypothesis (factor): the specific radiomics features that are used as inputs (feature selection).</p></li>
-</ol>
-</li>
-</ol>
-<p>In order to verify the hypothesis that radiomics features extracted from mpMRI images can predict the clinical significance of prostate lesions as determined by biopsy results, we used a supervised learning algorithm to train a model on the mpMRI images and the biopsy results.</p>
-<p>We extracted the radiomics features using a dedicated library that calculated features based on the intensity, texture, and shape of the lesions. These features included measures such as the mean, standard deviation, skewness, and kurtosis of the intensity values within the lesions, as well as texture features such as the grey-level co-occurrence matrix and the grey-level run-length matrix.</p>
-<p>We then split the data into training and testing sets, using a ratio of 80:20. We used the training set to train the model, and the testing set to evaluate the model’s performance.</p>
-<p>To assess the performance of the model, we used cross-validation to calculate the area under the receiver operating characteristic (AUC-ROC) curve, as well as other measures such as sensitivity, specificity, and F1 score. We also visualized the model’s predictions using an ROC curve, which plots the true positive rate against the false positive rate.</p>
-<p>In addition, we performed a bootstrap test to estimate the uncertainty in our results. Specifically, we resampled the data with replacement and re-ran the analysis 1000 times, calculating the mean and standard deviation of the AUC-ROC values for each resampling. This allowed us to get a sense of the range of possible values for the AUC-ROC and to determine whether our results were statistically significant.</p>
-<p>We used a paired t-test to compare the performance of the model to the performance of radiologists in predicting the clinical significance of the lesions. We considered a p-value of less than 0.05 to be statistically significant.</p>
-<p>Finally, we performed a hypothesis test to determine whether the performance of the model was significantly different from a random guess for each predicted imaging feature as assessed by radiologists. We used a one-sample t-test to compare the mean AUC-ROC of the model to a value of 0.5, which represents the performance expected from a random guess.</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="radiomics-features-extraction">
+<h1>Radiomics Features Extraction<a class="headerlink" href="#radiomics-features-extraction" title="Permalink to this headline">#</a></h1>
+<p>In this notebook, we will be extracting radiomics features for prostate lesions on all mpMRI modalities. These lesions have been manually segmented by radiologists, and we will be using separate settings for each feature extractor.</p>
+<p>Radiomics is the process of extracting quantitative features from medical imaging data. These features can provide important information about the characteristics of a lesion, and can be used for a variety of purposes, including diagnosis, prognosis, and treatment planning.</p>
+<p>Before we begin, it’s important to note that the process of extracting radiomics features can be computationally intensive, so please be patient as the scripts in this notebook run.</p>
+<p>Now, let’s get started by setting up our environment and importing the necessary libraries.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys 
+import os 
+from config import config # For reading the config files
+
+# Setup the notebook
+%load_ext autoreload
+%autoreload 2
+
+# Add src to path
+
+if os.path.basename(os.getcwd()) != &#39;ai4ar-radiomics&#39;:
+    os.chdir(&#39;..&#39;)
+
+if &#39;src&#39; not in sys.path:
+    sys.path.append(&#39;src&#39;)
+
+cfg = config(
+    (&#39;json&#39;, &#39;config/config.json&#39;, True),
+    (&#39;json&#39;, &#39;config/config-ext.json&#39;, True), 
+    (&#39;json&#39;, &#39;config/radiomics-test.json&#39;, True), 
+    ignore_missing_paths = True
+)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
+from extractor_utils import construct_feature_extractor, extract # Extractor utils from src folder
+
+import pandas as pd # For saving the features
+</pre></div>
+</div>
+</div>
+</div>
+<section id="dataset-initialization">
+<h2>Dataset initialization<a class="headerlink" href="#dataset-initialization" title="Permalink to this headline">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset = ai4ar.Dataset(cfg[&#39;data_dir&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Clinical metadata
+dataset[dataset.case_ids[0]].clinical_metadata()
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Radiological metadata
+dataset[dataset.case_ids[0]].radiological_metadata()
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="feature-extraction">
+<h2>Feature Extraction<a class="headerlink" href="#feature-extraction" title="Permalink to this headline">#</a></h2>
+<section id="construct-the-extractors">
+<h3>Construct the extractors<a class="headerlink" href="#construct-the-extractors" title="Permalink to this headline">#</a></h3>
+<p>Extractors are created based on the config/radiomics-test.json configuration</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+# Possible feature class names =  [&#39;firstorder&#39;, &#39;glcm&#39;, &#39;gldm&#39;, &#39;glrlm&#39;, &#39;glszm&#39;, &#39;ngtdm&#39;, &#39;shape&#39;, &#39;shape2D&#39;]
+
+extractors = {}
+
+for modality in cfg[&#39;radiomics.settings.extractor&#39;].keys():
+    extractors[modality] = construct_feature_extractor(cfg[&#39;radiomics.settings.extractor&#39;][modality])
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="extract-the-radiomics-feature">
+<h3>Extract the radiomics feature<a class="headerlink" href="#extract-the-radiomics-feature" title="Permalink to this headline">#</a></h3>
+<p>Create the jobs (copies of radiological_metadata dataframe) with info about proper mask and image paths</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+jobs_dfs = {}
+
+# Create jobs for modalities in the dataset with proper extractor and store them in a dictionary of dataframes
+for modality in extractors.keys():    
+    # Create a dataframe with the jobs for this modality
+    jobs_dfs[modality] = dataset.radiological_metadata[[&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;, &#39;label_&#39;+modality]].copy()
+    # Rename the label column to mask_path 
+    jobs_dfs[modality].rename(columns={&#39;label_&#39;+modality: &#39;mask_path&#39;}, inplace=True)
+    # Add the data path column
+    jobs_dfs[modality][&#39;data_path&#39;] = &#39;data/&#39;+modality
+    
+    # Drop rows with no mask
+    jobs_dfs[modality].dropna(subset=[&#39;mask_path&#39;], inplace=True)
+    
+    # If dataset is empty, remove it
+    if jobs_dfs[modality].empty:
+        del jobs_dfs[modality]
+        continue
+</pre></div>
+</div>
+</div>
+</div>
+<p>Extract the features and dump the results for each modality to the tmp dir</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Target directory for the features
+floc_dir = os.path.join(&#39;.&#39;, dataset.tmp_dir)
+
+for modality, jobs_df in jobs_dfs.items():
+    floc = os.path.join(floc_dir, f&#39;radiomics_{modality}.csv&#39;)
+    
+    if not os.path.exists(floc):
+        print(f&#39;Extracting features for {modality}&#39;)
+        features = extract(dataset, extractors[modality], jobs_df, n_jobs=4)
+        print(f&#39;Features for {modality} extracted, saving&#39;)
+        
+        # Save the not none features
+        pd.DataFrame([f for f in features if f is not None]).to_csv(floc, index=False)
+        
+        # Report the number of cases with no features
+        print(&#39;Failed features&#39;)
+        print(jobs_df.loc[[f is None for f in features]][[&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]])
+    else:
+        print(f&#39;Features for {modality} already extracted, skipping&#39;)
+        
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
+# Visualize features 
+
+
+pd.read_csv(os.path.join(dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;)).head()
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 </section>
 </section>
 
@@ -445,17 +644,17 @@ title="Print to PDF"
                 
     <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="../index.html" title="previous page">
+    <a class='left-prev' id="prev-link" href="data.html" title="previous page">
         <i class="fas fa-angle-left"></i>
         <div class="prev-next-info">
             <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">AI4AR - Radiomics Study</p>
+            <p class="prev-next-title">Data visualisation</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="data.html" title="next page">
+    <a class='right-next' id="next-link" href="predictive_models_pycaret.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Data visualisation</p>
+        <p class="prev-next-title">Predictive models for clinical significance / PI-RADS (pycaret)</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
