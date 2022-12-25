@@ -7,8 +7,8 @@ chapters:
   - file: book/methods
   - file: book/data
   - file: book/radiomics_extraction
+  - file: book/predictive_models_pycaret
   - file: book/predictive_models_imaging_features
-  - file: book/predictive_models
   - file: book/predictive_models_factors
   - file: book/bibliography
 
