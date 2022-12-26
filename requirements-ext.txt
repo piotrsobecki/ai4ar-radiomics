@@ -1,13 +1,12 @@
-numpy==1.20.3
-plotly
-pandas
-SimpleITK
-matplotlib
-python-benedict==0.27.1
--e git+https://github.com/piotrsobecki/ai4ar-helper.git#egg=ai4ar
-pyradiomics
-scikit-image
-scipy==1.5.4
-trimesh
+numpy>=1.21, <1.23
+pandas>=1.3.0, <1.6.0
 joblib==1.2.0
+pyradiomics==3.0.1
 pycaret==2.3.10
+scikit-learn==0.23.2
+SimpleITK>=0.9.1
+matplotlib>=3.3.0
+python-benedict==0.24.3
+scipy==1.5.4
+python-configuration==0.8.2
+-e git+https://github.com/piotrsobecki/ai4ar-helper.git#egg=ai4ar
