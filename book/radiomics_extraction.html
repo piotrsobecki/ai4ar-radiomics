@@ -55,7 +55,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="shortcut icon" href="../_static/fav.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Predictive models for clinical significance / PI-RADS (pycaret)" href="predictive_models_pycaret.html" />
+    <link rel="next" title="Predictive models for lesion PI-RADS and the clinical significance (pycaret)" href="predictive_models_pycaret.html" />
     <link rel="prev" title="Data visualisation" href="data.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -126,7 +126,7 @@ const thebe_selector_output = ".output, .cell_output"
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="predictive_models_pycaret.html">
-   Predictive models for clinical significance / PI-RADS (pycaret)
+   Predictive models for lesion PI-RADS and the clinical significance (pycaret)
   </a>
  </li>
  <li class="toctree-l1">
@@ -518,6 +518,77 @@ dataset[dataset.case_ids[0]].clinical_metadata()
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>patient_id</th>
+      <th>patient_age</th>
+      <th>mri_source</th>
+      <th>clinical_group</th>
+      <th>prior_biopsies</th>
+      <th>dre_result</th>
+      <th>psa_result</th>
+      <th>prostate_volume_us</th>
+      <th>psa_density_us</th>
+      <th>prostate_volume_mri</th>
+      <th>...</th>
+      <th>isup_group</th>
+      <th>tnm_pathological_t</th>
+      <th>postoperative_margin</th>
+      <th>gs_post</th>
+      <th>isup_grade_post</th>
+      <th>tnm_pathological_t_post</th>
+      <th>tnm_pathological_n_post</th>
+      <th>tnm_pathological_m_post</th>
+      <th>eau_risk</th>
+      <th>treatment</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>71</td>
+      <td>DCO</td>
+      <td>TN</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>17.2</td>
+      <td>64.8</td>
+      <td>0.27</td>
+      <td>47.9</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>t0</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>IR_L</td>
+      <td>B</td>
+    </tr>
+  </tbody>
+</table>
+<p>1 rows × 47 columns</p>
+</div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -526,6 +597,125 @@ dataset[dataset.case_ids[0]].radiological_metadata()
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>patient_id</th>
+      <th>radiologist_id</th>
+      <th>lesion_id</th>
+      <th>TBx</th>
+      <th>dimension</th>
+      <th>lesion_dim_sequence</th>
+      <th>lesion_sectors</th>
+      <th>lesion_sectors_simple</th>
+      <th>lesion_zones</th>
+      <th>lesion_originating</th>
+      <th>...</th>
+      <th>label_cor</th>
+      <th>label_hbv</th>
+      <th>label_sag</th>
+      <th>label_t2w</th>
+      <th>label_dce1</th>
+      <th>label_dce2</th>
+      <th>label_dce3</th>
+      <th>label_dce4</th>
+      <th>label_dce5</th>
+      <th>label_dce6</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>U_OjmNZ8</td>
+      <td>1</td>
+      <td>0</td>
+      <td>16.0</td>
+      <td>T2W</td>
+      <td>AS-left-in-mid,TZa-left-in-mid</td>
+      <td>AS,TZa</td>
+      <td>AS,TZ</td>
+      <td>TZ</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/OjmNZ8</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/OjmNZ8</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>1</td>
+      <td>0</td>
+      <td>29.0</td>
+      <td>T2W</td>
+      <td>AS-right-in-base,TZa-right-in-base,AS-left-in-...</td>
+      <td>AS,TZa</td>
+      <td>AS,TZ</td>
+      <td>TZ</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/8ZmM76</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>U_OrjnrO</td>
+      <td>1</td>
+      <td>0</td>
+      <td>31.0</td>
+      <td>T2W</td>
+      <td>AS-left-in-apex,AS-left-in-mid,AS-right-in-mid...</td>
+      <td>AS</td>
+      <td>AS</td>
+      <td>TZ</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/hbv/OrjnrO</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/t2w/OrjnrO</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>lesion_labels/lesion1/dce3/OrjnrO</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>3 rows × 31 columns</p>
+</div></div></div>
 </div>
 </section>
 <section id="feature-extraction">
@@ -601,6 +791,14 @@ for modality, jobs_df in jobs_dfs.items():
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Features for adc already extracted, skipping
+Features for hbv already extracted, skipping
+Features for dce3 already extracted, skipping
+Features for t2w already extracted, skipping
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -612,6 +810,173 @@ pd.read_csv(os.path.join(dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;)).head()
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>patient_id</th>
+      <th>lesion_id</th>
+      <th>radiologist_id</th>
+      <th>mask_path</th>
+      <th>data_path</th>
+      <th>original_firstorder_10Percentile</th>
+      <th>original_firstorder_90Percentile</th>
+      <th>original_firstorder_Energy</th>
+      <th>original_firstorder_Entropy</th>
+      <th>original_firstorder_InterquartileRange</th>
+      <th>...</th>
+      <th>original_glcm_Imc2</th>
+      <th>original_glcm_InverseVariance</th>
+      <th>original_glcm_JointAverage</th>
+      <th>original_glcm_JointEnergy</th>
+      <th>original_glcm_JointEntropy</th>
+      <th>original_glcm_MCC</th>
+      <th>original_glcm_MaximumProbability</th>
+      <th>original_glcm_SumAverage</th>
+      <th>original_glcm_SumEntropy</th>
+      <th>original_glcm_SumSquares</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_OjmNZ8</td>
+      <td>lesion_labels/lesion1/t2w/OjmNZ8</td>
+      <td>data/t2w</td>
+      <td>95.0</td>
+      <td>159.0</td>
+      <td>3410783.0</td>
+      <td>2.248859</td>
+      <td>32.00</td>
+      <td>...</td>
+      <td>0.549885</td>
+      <td>0.475830</td>
+      <td>5.672836</td>
+      <td>0.084822</td>
+      <td>4.116675</td>
+      <td>0.442936</td>
+      <td>0.147789</td>
+      <td>11.345671</td>
+      <td>2.699190</td>
+      <td>1.287434</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>data/t2w</td>
+      <td>83.0</td>
+      <td>161.0</td>
+      <td>18951780.0</td>
+      <td>2.436913</td>
+      <td>40.00</td>
+      <td>...</td>
+      <td>0.374144</td>
+      <td>0.468826</td>
+      <td>5.542182</td>
+      <td>0.060359</td>
+      <td>4.592517</td>
+      <td>0.239668</td>
+      <td>0.117783</td>
+      <td>11.084365</td>
+      <td>2.883047</td>
+      <td>1.617012</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1</td>
+      <td>1</td>
+      <td>U_OrjnrO</td>
+      <td>lesion_labels/lesion1/t2w/OrjnrO</td>
+      <td>data/t2w</td>
+      <td>79.0</td>
+      <td>164.1</td>
+      <td>28481031.0</td>
+      <td>2.572456</td>
+      <td>44.00</td>
+      <td>...</td>
+      <td>0.331395</td>
+      <td>0.448691</td>
+      <td>5.505017</td>
+      <td>0.049960</td>
+      <td>4.861650</td>
+      <td>0.202465</td>
+      <td>0.104634</td>
+      <td>11.010035</td>
+      <td>2.987150</td>
+      <td>1.896145</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3</td>
+      <td>1</td>
+      <td>U_8ZmM76</td>
+      <td>lesion_labels/lesion1/t2w/8ZmM76</td>
+      <td>data/t2w</td>
+      <td>63.0</td>
+      <td>201.0</td>
+      <td>2243638.0</td>
+      <td>3.056317</td>
+      <td>57.00</td>
+      <td>...</td>
+      <td>0.778955</td>
+      <td>0.369224</td>
+      <td>5.363399</td>
+      <td>0.030463</td>
+      <td>5.458917</td>
+      <td>0.482515</td>
+      <td>0.074127</td>
+      <td>10.726799</td>
+      <td>3.440320</td>
+      <td>4.088800</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>3</td>
+      <td>2</td>
+      <td>U_8ekGLQ</td>
+      <td>lesion_labels/lesion2/t2w/8ekGLQ</td>
+      <td>data/t2w</td>
+      <td>26.0</td>
+      <td>153.9</td>
+      <td>5056339.0</td>
+      <td>2.897668</td>
+      <td>67.75</td>
+      <td>...</td>
+      <td>0.589371</td>
+      <td>0.340918</td>
+      <td>4.101640</td>
+      <td>0.025578</td>
+      <td>5.515494</td>
+      <td>0.359564</td>
+      <td>0.050298</td>
+      <td>8.203280</td>
+      <td>3.370117</td>
+      <td>3.745566</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 47 columns</p>
+</div></div></div>
 </div>
 </section>
 </section>
@@ -654,7 +1019,7 @@ pd.read_csv(os.path.join(dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;)).head()
     <a class='right-next' id="next-link" href="predictive_models_pycaret.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Predictive models for clinical significance / PI-RADS (pycaret)</p>
+        <p class="prev-next-title">Predictive models for lesion PI-RADS and the clinical significance (pycaret)</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
