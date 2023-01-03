@@ -561,100 +561,100 @@ title="Print to PDF"
 <p>Let’s begin by importing the necessary libraries and loading the data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#!pip install --no-cache-dir pycaret
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="ch">#!pip install --no-cache-dir pycaret</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys 
-import os 
-# Setup the notebook
-%load_ext autoreload
-%autoreload 2
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span> 
+<span class="kn">import</span> <span class="nn">os</span> 
+<span class="c1"># Setup the notebook</span>
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-# Add src to path
+<span class="c1"># Add src to path</span>
 
-if os.path.basename(os.getcwd()) != &#39;ai4ar-radiomics&#39;:
-    os.chdir(&#39;..&#39;)
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span> <span class="o">!=</span> <span class="s1">&#39;ai4ar-radiomics&#39;</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
 
-if &#39;src&#39; not in sys.path:
-    sys.path.append(&#39;src&#39;)
+<span class="k">if</span> <span class="s1">&#39;src&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span>
 
-from config import config # For reading the config files
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">config</span> <span class="c1"># For reading the config files</span>
 
-cfg = config(
-    (&#39;json&#39;, &#39;config/config.json&#39;, True),
-    (&#39;json&#39;, &#39;config/config-ext.json&#39;, True),
-    ignore_missing_paths = True
-)
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config-ext.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="n">ignore_missing_paths</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ai4ar</span> <span class="c1"># AI4AR Helper package</span>
 
-import pandas as pd # For saving the features
-from pycaret.classification import *
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> <span class="c1"># For saving the features</span>
+<span class="kn">from</span> <span class="nn">pycaret.classification</span> <span class="kn">import</span> <span class="o">*</span>
 
-# Print the confusion matrix for the test set
-from sklearn.metrics import confusion_matrix
+<span class="c1"># Print the confusion matrix for the test set</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
 
-# Print the classification report for the test set
-from sklearn.metrics import classification_report
+<span class="c1"># Print the classification report for the test set</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Load the dataset
-dataset = ai4ar.Dataset(cfg[&#39;data_dir&#39;])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
 
-seed = 1991
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">1991</span>
 
 
-train_test_ratio = 3/4
+<span class="n">train_test_ratio</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mi">4</span>
 
-# Add T2W pirads category
-dataset.radiological_metadata[&#39;lesion_t2w_cat&#39;] = dataset.radiological_metadata[&#39;lesion_t2w_pz_cat&#39;].fillna(&#39;&#39;) + dataset.radiological_metadata[&#39;lesion_t2w_tz_cat&#39;].fillna(&#39;&#39;)
-dataset.radiological_metadata[&#39;lesion_t2w&#39;] = dataset.radiological_metadata[&#39;lesion_t2w_pz&#39;].fillna(0) + dataset.radiological_metadata[&#39;lesion_t2w_tz&#39;].fillna(0)
+<span class="c1"># Add T2W pirads category</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w_cat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w_pz_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w_tz_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w_pz&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;lesion_t2w_tz&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-# Randomly slect 30% of the dataset for testing, and 70% for training
+<span class="c1"># Randomly slect 30% of the dataset for testing, and 70% for training</span>
 
-patients = dataset.radiological_metadata[&#39;patient_id&#39;].unique()
-np.random.seed(seed) 
-train_msk = np.random.rand(len(patients)) &lt; train_test_ratio
+<span class="n">patients</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span> 
+<span class="n">train_msk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">patients</span><span class="p">))</span> <span class="o">&lt;</span> <span class="n">train_test_ratio</span>
 
-train_metadata = dataset.radiological_metadata[dataset.radiological_metadata[&#39;patient_id&#39;].isin(patients[train_msk])]
-test_metadata = dataset.radiological_metadata[~dataset.radiological_metadata[&#39;patient_id&#39;].isin(patients[train_msk])]
+<span class="n">train_metadata</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">patients</span><span class="p">[</span><span class="n">train_msk</span><span class="p">])]</span>
+<span class="n">test_metadata</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="o">~</span><span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">patients</span><span class="p">[</span><span class="n">train_msk</span><span class="p">])]</span>
 
-# Load the extracted radiomics features
-t2w_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;))
-# Load the extracted radiomics features
-adc_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_adc.csv&#39;))
-# Load the extracted radiomics features
-hbv_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_hbv.csv&#39;))
-# Load the extracted radiomics features
-dce_features = pd.read_csv(os.path.join(&#39;.&#39;,dataset.tmp_dir, &#39;radiomics_dce3.csv&#39;))
+<span class="c1"># Load the extracted radiomics features</span>
+<span class="n">t2w_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s1">&#39;radiomics_t2w.csv&#39;</span><span class="p">))</span>
+<span class="c1"># Load the extracted radiomics features</span>
+<span class="n">adc_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s1">&#39;radiomics_adc.csv&#39;</span><span class="p">))</span>
+<span class="c1"># Load the extracted radiomics features</span>
+<span class="n">hbv_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s1">&#39;radiomics_hbv.csv&#39;</span><span class="p">))</span>
+<span class="c1"># Load the extracted radiomics features</span>
+<span class="n">dce_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s1">&#39;radiomics_dce3.csv&#39;</span><span class="p">))</span>
 
-# Add infor about the source modality to the features
-for mod, df in zip([&#39;t2w&#39;,&#39;hbv&#39;,&#39;adc&#39;,&#39;dce&#39;], [t2w_features, hbv_features, adc_features, dce_features]):
-    df.rename(columns={col: f&#39;{col}_{mod}&#39; for col in df.columns if &#39;original_&#39; in col}, inplace=True)
+<span class="c1"># Add infor about the source modality to the features</span>
+<span class="k">for</span> <span class="n">mod</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;t2w&#39;</span><span class="p">,</span><span class="s1">&#39;hbv&#39;</span><span class="p">,</span><span class="s1">&#39;adc&#39;</span><span class="p">,</span><span class="s1">&#39;dce&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">t2w_features</span><span class="p">,</span> <span class="n">hbv_features</span><span class="p">,</span> <span class="n">adc_features</span><span class="p">,</span> <span class="n">dce_features</span><span class="p">]):</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">col</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;original_&#39;</span> <span class="ow">in</span> <span class="n">col</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
 
-# IDX columns
-idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]  
+<span class="c1"># IDX columns</span>
+<span class="n">idx_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="s1">&#39;lesion_id&#39;</span><span class="p">,</span> <span class="s1">&#39;radiologist_id&#39;</span><span class="p">]</span>  
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>len(train_metadata)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -666,7 +666,7 @@ idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>len(test_metadata)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -678,7 +678,7 @@ idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>train_metadata.head(5)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_metadata</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -923,7 +923,7 @@ idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>train_metadata.columns
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_metadata</span><span class="o">.</span><span class="n">columns</span>
 </pre></div>
 </div>
 </div>
@@ -943,7 +943,7 @@ idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>t2w_features.head()
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">t2w_features</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1272,46 +1272,46 @@ idx_cols = [&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def prepare_input(metadata, features, target):
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">prepare_input</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
         
 
-    radiomic_cols = [ col for col in features.columns if &#39;original_&#39; in col]
+    <span class="n">radiomic_cols</span> <span class="o">=</span> <span class="p">[</span> <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;original_&#39;</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
     
-    # Merge the features and the metadata
-    input = metadata.merge(features, on=idx_cols, how=&#39;left&#39;)
+    <span class="c1"># Merge the features and the metadata</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
     
-    # Adding fold groups (patient_id) - groupping is important for the cross validation as we want to keep the same patient in the same fold
-    input = input[[*radiomic_cols, &#39;patient_id&#39;, target]]
-    # Filter na 
-    input = input[~input[target].isin([&#39;na&#39;,&#39;x&#39;,&#39;X&#39;])]
-    input = input[~input[target].isna()]
-    input[target] = input[target].astype(int)
+    <span class="c1"># Adding fold groups (patient_id) - groupping is important for the cross validation as we want to keep the same patient in the same fold</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[[</span><span class="o">*</span><span class="n">radiomic_cols</span><span class="p">,</span> <span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="n">target</span><span class="p">]]</span>
+    <span class="c1"># Filter na </span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="o">~</span><span class="nb">input</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;na&#39;</span><span class="p">,</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;X&#39;</span><span class="p">])]</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="o">~</span><span class="nb">input</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()]</span>
+    <span class="nb">input</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     
-    return input
+    <span class="k">return</span> <span class="nb">input</span>
 
 
-def setup_pycaret(train, target):
-    return setup(
-        data = train, 
-        target = target,
-        session_id=seed,
-        fold_strategy=&#39;groupkfold&#39;,
-        fold_groups=&#39;patient_id&#39;, # Group by patient_id, so that the same patient is not in different folds
-        normalize=True,
-        transformation=False,
-        feature_selection=True,
-        ignore_low_variance=True,
-        remove_multicollinearity=True, 
-        silent=True, # Otherwise it will ask for input
-        multicollinearity_threshold=0.95
-    )
+<span class="k">def</span> <span class="nf">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">setup</span><span class="p">(</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">train</span><span class="p">,</span> 
+        <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+        <span class="n">fold_strategy</span><span class="o">=</span><span class="s1">&#39;groupkfold&#39;</span><span class="p">,</span>
+        <span class="n">fold_groups</span><span class="o">=</span><span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="c1"># Group by patient_id, so that the same patient is not in different folds</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">transformation</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">feature_selection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">ignore_low_variance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">remove_multicollinearity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># Otherwise it will ask for input</span>
+        <span class="n">multicollinearity_threshold</span><span class="o">=</span><span class="mf">0.95</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>considered_models = [&#39;lr&#39;, &#39;ridge&#39;, &#39;lda&#39;, &#39;qda&#39;, &#39;svm&#39;]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">considered_models</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lr&#39;</span><span class="p">,</span> <span class="s1">&#39;ridge&#39;</span><span class="p">,</span> <span class="s1">&#39;lda&#39;</span><span class="p">,</span> <span class="s1">&#39;qda&#39;</span><span class="p">,</span> <span class="s1">&#39;svm&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1321,17 +1321,17 @@ def setup_pycaret(train, target):
 <p>Predicting the DCE PI-RADS score (+/-) based on the DCE radiomic features</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_dce&#39;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;lesion_dce&#39;</span>
 
-train = prepare_input(train_metadata, dce_features, target)
-test = prepare_input(test_metadata, dce_features, target)
+<span class="n">train</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">,</span> <span class="n">dce_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">,</span> <span class="n">dce_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>len(train)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1343,14 +1343,14 @@ test = prepare_input(test_metadata, dce_features, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#!pip install --force --no-cache-dir scikit-learn==0.23.2
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="ch">#!pip install --force --no-cache-dir scikit-learn==0.23.2</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clfs = setup_pycaret(train, target)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clfs</span> <span class="o">=</span> <span class="n">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1675,9 +1675,9 @@ test = prepare_input(test_metadata, dce_features, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Removed features:\n\t&#39;, &#39;, &#39;.join(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Removed features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 
-print(&#39;\n\nSelected features:\n\t&#39;, &#39;, &#39;.join(set(get_config(&#39;X_train&#39;).columns)))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Selected features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -1695,33 +1695,33 @@ Selected features:
 <p>AutoML best model</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3, sort=&#39;AUC&#39;, include=considered_models)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top3</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">n_select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">considered_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output text_html"><style type="text/css">
-#T_d56fa_ th {
+#T_47d04_ th {
   text-align: left;
 }
-#T_d56fa_row0_col0, #T_d56fa_row0_col3, #T_d56fa_row1_col0, #T_d56fa_row1_col1, #T_d56fa_row1_col2, #T_d56fa_row1_col3, #T_d56fa_row1_col4, #T_d56fa_row1_col5, #T_d56fa_row1_col6, #T_d56fa_row1_col7, #T_d56fa_row2_col0, #T_d56fa_row2_col1, #T_d56fa_row2_col2, #T_d56fa_row2_col3, #T_d56fa_row2_col4, #T_d56fa_row2_col5, #T_d56fa_row2_col6, #T_d56fa_row2_col7, #T_d56fa_row3_col0, #T_d56fa_row3_col1, #T_d56fa_row3_col2, #T_d56fa_row3_col4, #T_d56fa_row3_col5, #T_d56fa_row3_col6, #T_d56fa_row3_col7, #T_d56fa_row4_col0, #T_d56fa_row4_col1, #T_d56fa_row4_col2, #T_d56fa_row4_col3, #T_d56fa_row4_col4, #T_d56fa_row4_col5, #T_d56fa_row4_col6, #T_d56fa_row4_col7 {
+#T_47d04_row0_col0, #T_47d04_row0_col1, #T_47d04_row0_col3, #T_47d04_row0_col4, #T_47d04_row0_col5, #T_47d04_row0_col6, #T_47d04_row0_col7, #T_47d04_row1_col0, #T_47d04_row1_col2, #T_47d04_row1_col3, #T_47d04_row2_col0, #T_47d04_row2_col1, #T_47d04_row2_col2, #T_47d04_row2_col3, #T_47d04_row2_col4, #T_47d04_row2_col5, #T_47d04_row2_col6, #T_47d04_row2_col7, #T_47d04_row3_col0, #T_47d04_row3_col1, #T_47d04_row3_col2, #T_47d04_row3_col3, #T_47d04_row3_col4, #T_47d04_row3_col5, #T_47d04_row3_col6, #T_47d04_row3_col7, #T_47d04_row4_col0, #T_47d04_row4_col1, #T_47d04_row4_col2, #T_47d04_row4_col3, #T_47d04_row4_col4, #T_47d04_row4_col5, #T_47d04_row4_col6, #T_47d04_row4_col7, #T_47d04_row5_col0, #T_47d04_row5_col1, #T_47d04_row5_col2, #T_47d04_row5_col3, #T_47d04_row5_col4, #T_47d04_row5_col5, #T_47d04_row5_col6, #T_47d04_row5_col7, #T_47d04_row6_col0, #T_47d04_row6_col1, #T_47d04_row6_col2, #T_47d04_row6_col3, #T_47d04_row6_col4, #T_47d04_row6_col5, #T_47d04_row6_col6, #T_47d04_row6_col7, #T_47d04_row7_col0, #T_47d04_row7_col1, #T_47d04_row7_col2, #T_47d04_row7_col3, #T_47d04_row7_col4, #T_47d04_row7_col5, #T_47d04_row7_col6, #T_47d04_row7_col7, #T_47d04_row8_col0, #T_47d04_row8_col1, #T_47d04_row8_col2, #T_47d04_row8_col3, #T_47d04_row8_col4, #T_47d04_row8_col5, #T_47d04_row8_col6, #T_47d04_row8_col7, #T_47d04_row9_col0, #T_47d04_row9_col1, #T_47d04_row9_col2, #T_47d04_row9_col3, #T_47d04_row9_col4, #T_47d04_row9_col5, #T_47d04_row9_col6, #T_47d04_row9_col7, #T_47d04_row10_col0, #T_47d04_row10_col1, #T_47d04_row10_col2, #T_47d04_row10_col3, #T_47d04_row10_col4, #T_47d04_row10_col5, #T_47d04_row10_col6, #T_47d04_row10_col7, #T_47d04_row11_col0, #T_47d04_row11_col1, #T_47d04_row11_col2, #T_47d04_row11_col4, #T_47d04_row11_col5, #T_47d04_row11_col6, #T_47d04_row11_col7, #T_47d04_row12_col0, #T_47d04_row12_col1, #T_47d04_row12_col2, #T_47d04_row12_col3, #T_47d04_row12_col4, #T_47d04_row12_col5, #T_47d04_row12_col6, #T_47d04_row12_col7, #T_47d04_row13_col0, #T_47d04_row13_col1, #T_47d04_row13_col2, #T_47d04_row13_col3, #T_47d04_row13_col4, #T_47d04_row13_col5, #T_47d04_row13_col6, #T_47d04_row13_col7 {
   text-align: left;
 }
-#T_d56fa_row0_col1, #T_d56fa_row0_col2, #T_d56fa_row0_col4, #T_d56fa_row0_col5, #T_d56fa_row0_col6, #T_d56fa_row0_col7, #T_d56fa_row3_col3 {
+#T_47d04_row0_col2, #T_47d04_row1_col1, #T_47d04_row1_col4, #T_47d04_row1_col5, #T_47d04_row1_col6, #T_47d04_row1_col7, #T_47d04_row11_col3 {
   text-align: left;
   background-color: yellow;
 }
-#T_d56fa_row0_col8, #T_d56fa_row3_col8, #T_d56fa_row4_col8 {
+#T_47d04_row0_col8, #T_47d04_row1_col8, #T_47d04_row2_col8, #T_47d04_row3_col8, #T_47d04_row4_col8, #T_47d04_row5_col8, #T_47d04_row6_col8, #T_47d04_row7_col8, #T_47d04_row8_col8, #T_47d04_row9_col8, #T_47d04_row10_col8, #T_47d04_row12_col8, #T_47d04_row13_col8 {
   text-align: left;
-  background-color: yellow;
   background-color: lightgrey;
 }
-#T_d56fa_row1_col8, #T_d56fa_row2_col8 {
+#T_47d04_row11_col8 {
   text-align: left;
+  background-color: yellow;
   background-color: lightgrey;
 }
 </style>
-<table id="T_d56fa_">
+<table id="T_47d04_">
   <thead>
     <tr>
       <th class="blank level0" >&nbsp;</th>
@@ -1738,64 +1738,172 @@ Selected features:
   </thead>
   <tbody>
     <tr>
-      <th id="T_d56fa_level0_row0" class="row_heading level0 row0" >qda</th>
-      <td id="T_d56fa_row0_col0" class="data row0 col0" >Quadratic Discriminant Analysis</td>
-      <td id="T_d56fa_row0_col1" class="data row0 col1" >0.8507</td>
-      <td id="T_d56fa_row0_col2" class="data row0 col2" >0.8363</td>
-      <td id="T_d56fa_row0_col3" class="data row0 col3" >0.8894</td>
-      <td id="T_d56fa_row0_col4" class="data row0 col4" >0.9063</td>
-      <td id="T_d56fa_row0_col5" class="data row0 col5" >0.8969</td>
-      <td id="T_d56fa_row0_col6" class="data row0 col6" >0.6141</td>
-      <td id="T_d56fa_row0_col7" class="data row0 col7" >0.6189</td>
-      <td id="T_d56fa_row0_col8" class="data row0 col8" >0.0040</td>
+      <th id="T_47d04_level0_row0" class="row_heading level0 row0" >gbc</th>
+      <td id="T_47d04_row0_col0" class="data row0 col0" >Gradient Boosting Classifier</td>
+      <td id="T_47d04_row0_col1" class="data row0 col1" >0.9616</td>
+      <td id="T_47d04_row0_col2" class="data row0 col2" >0.9957</td>
+      <td id="T_47d04_row0_col3" class="data row0 col3" >0.9671</td>
+      <td id="T_47d04_row0_col4" class="data row0 col4" >0.9608</td>
+      <td id="T_47d04_row0_col5" class="data row0 col5" >0.9637</td>
+      <td id="T_47d04_row0_col6" class="data row0 col6" >0.9228</td>
+      <td id="T_47d04_row0_col7" class="data row0 col7" >0.9233</td>
+      <td id="T_47d04_row0_col8" class="data row0 col8" >0.3070</td>
     </tr>
     <tr>
-      <th id="T_d56fa_level0_row1" class="row_heading level0 row1" >lr</th>
-      <td id="T_d56fa_row1_col0" class="data row1 col0" >Logistic Regression</td>
-      <td id="T_d56fa_row1_col1" class="data row1 col1" >0.7229</td>
-      <td id="T_d56fa_row1_col2" class="data row1 col2" >0.5569</td>
-      <td id="T_d56fa_row1_col3" class="data row1 col3" >0.9818</td>
-      <td id="T_d56fa_row1_col4" class="data row1 col4" >0.7327</td>
-      <td id="T_d56fa_row1_col5" class="data row1 col5" >0.8376</td>
-      <td id="T_d56fa_row1_col6" class="data row1 col6" >-0.0255</td>
-      <td id="T_d56fa_row1_col7" class="data row1 col7" >-0.0536</td>
-      <td id="T_d56fa_row1_col8" class="data row1 col8" >0.4130</td>
+      <th id="T_47d04_level0_row1" class="row_heading level0 row1" >lightgbm</th>
+      <td id="T_47d04_row1_col0" class="data row1 col0" >Light Gradient Boosting Machine</td>
+      <td id="T_47d04_row1_col1" class="data row1 col1" >0.9672</td>
+      <td id="T_47d04_row1_col2" class="data row1 col2" >0.9955</td>
+      <td id="T_47d04_row1_col3" class="data row1 col3" >0.9770</td>
+      <td id="T_47d04_row1_col4" class="data row1 col4" >0.9617</td>
+      <td id="T_47d04_row1_col5" class="data row1 col5" >0.9692</td>
+      <td id="T_47d04_row1_col6" class="data row1 col6" >0.9340</td>
+      <td id="T_47d04_row1_col7" class="data row1 col7" >0.9344</td>
+      <td id="T_47d04_row1_col8" class="data row1 col8" >0.1450</td>
     </tr>
     <tr>
-      <th id="T_d56fa_level0_row2" class="row_heading level0 row2" >lda</th>
-      <td id="T_d56fa_row2_col0" class="data row2 col0" >Linear Discriminant Analysis</td>
-      <td id="T_d56fa_row2_col1" class="data row2 col1" >0.7212</td>
-      <td id="T_d56fa_row2_col2" class="data row2 col2" >0.5522</td>
-      <td id="T_d56fa_row2_col3" class="data row2 col3" >0.9797</td>
-      <td id="T_d56fa_row2_col4" class="data row2 col4" >0.7323</td>
-      <td id="T_d56fa_row2_col5" class="data row2 col5" >0.8365</td>
-      <td id="T_d56fa_row2_col6" class="data row2 col6" >-0.0284</td>
-      <td id="T_d56fa_row2_col7" class="data row2 col7" >-0.0567</td>
-      <td id="T_d56fa_row2_col8" class="data row2 col8" >0.0050</td>
+      <th id="T_47d04_level0_row2" class="row_heading level0 row2" >rf</th>
+      <td id="T_47d04_row2_col0" class="data row2 col0" >Random Forest Classifier</td>
+      <td id="T_47d04_row2_col1" class="data row2 col1" >0.9630</td>
+      <td id="T_47d04_row2_col2" class="data row2 col2" >0.9940</td>
+      <td id="T_47d04_row2_col3" class="data row2 col3" >0.9800</td>
+      <td id="T_47d04_row2_col4" class="data row2 col4" >0.9516</td>
+      <td id="T_47d04_row2_col5" class="data row2 col5" >0.9655</td>
+      <td id="T_47d04_row2_col6" class="data row2 col6" >0.9256</td>
+      <td id="T_47d04_row2_col7" class="data row2 col7" >0.9263</td>
+      <td id="T_47d04_row2_col8" class="data row2 col8" >0.2260</td>
     </tr>
     <tr>
-      <th id="T_d56fa_level0_row3" class="row_heading level0 row3" >ridge</th>
-      <td id="T_d56fa_row3_col0" class="data row3 col0" >Ridge Classifier</td>
-      <td id="T_d56fa_row3_col1" class="data row3 col1" >0.7279</td>
-      <td id="T_d56fa_row3_col2" class="data row3 col2" >0.0000</td>
-      <td id="T_d56fa_row3_col3" class="data row3 col3" >0.9888</td>
-      <td id="T_d56fa_row3_col4" class="data row3 col4" >0.7340</td>
-      <td id="T_d56fa_row3_col5" class="data row3 col5" >0.8410</td>
-      <td id="T_d56fa_row3_col6" class="data row3 col6" >-0.0157</td>
-      <td id="T_d56fa_row3_col7" class="data row3 col7" >-0.0298</td>
-      <td id="T_d56fa_row3_col8" class="data row3 col8" >0.0040</td>
+      <th id="T_47d04_level0_row3" class="row_heading level0 row3" >lr</th>
+      <td id="T_47d04_row3_col0" class="data row3 col0" >Logistic Regression</td>
+      <td id="T_47d04_row3_col1" class="data row3 col1" >0.9520</td>
+      <td id="T_47d04_row3_col2" class="data row3 col2" >0.9932</td>
+      <td id="T_47d04_row3_col3" class="data row3 col3" >0.9511</td>
+      <td id="T_47d04_row3_col4" class="data row3 col4" >0.9575</td>
+      <td id="T_47d04_row3_col5" class="data row3 col5" >0.9541</td>
+      <td id="T_47d04_row3_col6" class="data row3 col6" >0.9037</td>
+      <td id="T_47d04_row3_col7" class="data row3 col7" >0.9042</td>
+      <td id="T_47d04_row3_col8" class="data row3 col8" >0.5030</td>
     </tr>
     <tr>
-      <th id="T_d56fa_level0_row4" class="row_heading level0 row4" >svm</th>
-      <td id="T_d56fa_row4_col0" class="data row4 col0" >SVM - Linear Kernel</td>
-      <td id="T_d56fa_row4_col1" class="data row4 col1" >0.5971</td>
-      <td id="T_d56fa_row4_col2" class="data row4 col2" >0.0000</td>
-      <td id="T_d56fa_row4_col3" class="data row4 col3" >0.7751</td>
-      <td id="T_d56fa_row4_col4" class="data row4 col4" >0.7041</td>
-      <td id="T_d56fa_row4_col5" class="data row4 col5" >0.7360</td>
-      <td id="T_d56fa_row4_col6" class="data row4 col6" >-0.1421</td>
-      <td id="T_d56fa_row4_col7" class="data row4 col7" >-0.1487</td>
-      <td id="T_d56fa_row4_col8" class="data row4 col8" >0.0040</td>
+      <th id="T_47d04_level0_row4" class="row_heading level0 row4" >et</th>
+      <td id="T_47d04_row4_col0" class="data row4 col0" >Extra Trees Classifier</td>
+      <td id="T_47d04_row4_col1" class="data row4 col1" >0.9576</td>
+      <td id="T_47d04_row4_col2" class="data row4 col2" >0.9922</td>
+      <td id="T_47d04_row4_col3" class="data row4 col3" >0.9788</td>
+      <td id="T_47d04_row4_col4" class="data row4 col4" >0.9438</td>
+      <td id="T_47d04_row4_col5" class="data row4 col5" >0.9607</td>
+      <td id="T_47d04_row4_col6" class="data row4 col6" >0.9145</td>
+      <td id="T_47d04_row4_col7" class="data row4 col7" >0.9159</td>
+      <td id="T_47d04_row4_col8" class="data row4 col8" >0.2030</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row5" class="row_heading level0 row5" >ada</th>
+      <td id="T_47d04_row5_col0" class="data row5 col0" >Ada Boost Classifier</td>
+      <td id="T_47d04_row5_col1" class="data row5 col1" >0.9521</td>
+      <td id="T_47d04_row5_col2" class="data row5 col2" >0.9918</td>
+      <td id="T_47d04_row5_col3" class="data row5 col3" >0.9511</td>
+      <td id="T_47d04_row5_col4" class="data row5 col4" >0.9579</td>
+      <td id="T_47d04_row5_col5" class="data row5 col5" >0.9542</td>
+      <td id="T_47d04_row5_col6" class="data row5 col6" >0.9038</td>
+      <td id="T_47d04_row5_col7" class="data row5 col7" >0.9044</td>
+      <td id="T_47d04_row5_col8" class="data row5 col8" >0.0940</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row6" class="row_heading level0 row6" >knn</th>
+      <td id="T_47d04_row6_col0" class="data row6 col0" >K Neighbors Classifier</td>
+      <td id="T_47d04_row6_col1" class="data row6 col1" >0.9528</td>
+      <td id="T_47d04_row6_col2" class="data row6 col2" >0.9902</td>
+      <td id="T_47d04_row6_col3" class="data row6 col3" >0.9684</td>
+      <td id="T_47d04_row6_col4" class="data row6 col4" >0.9440</td>
+      <td id="T_47d04_row6_col5" class="data row6 col5" >0.9559</td>
+      <td id="T_47d04_row6_col6" class="data row6 col6" >0.9052</td>
+      <td id="T_47d04_row6_col7" class="data row6 col7" >0.9059</td>
+      <td id="T_47d04_row6_col8" class="data row6 col8" >0.0730</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row7" class="row_heading level0 row7" >lda</th>
+      <td id="T_47d04_row7_col0" class="data row7 col0" >Linear Discriminant Analysis</td>
+      <td id="T_47d04_row7_col1" class="data row7 col1" >0.9460</td>
+      <td id="T_47d04_row7_col2" class="data row7 col2" >0.9890</td>
+      <td id="T_47d04_row7_col3" class="data row7 col3" >0.9468</td>
+      <td id="T_47d04_row7_col4" class="data row7 col4" >0.9509</td>
+      <td id="T_47d04_row7_col5" class="data row7 col5" >0.9486</td>
+      <td id="T_47d04_row7_col6" class="data row7 col6" >0.8917</td>
+      <td id="T_47d04_row7_col7" class="data row7 col7" >0.8922</td>
+      <td id="T_47d04_row7_col8" class="data row7 col8" >0.0280</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row8" class="row_heading level0 row8" >nb</th>
+      <td id="T_47d04_row8_col0" class="data row8 col0" >Naive Bayes</td>
+      <td id="T_47d04_row8_col1" class="data row8 col1" >0.9487</td>
+      <td id="T_47d04_row8_col2" class="data row8 col2" >0.9661</td>
+      <td id="T_47d04_row8_col3" class="data row8 col3" >0.9583</td>
+      <td id="T_47d04_row8_col4" class="data row8 col4" >0.9452</td>
+      <td id="T_47d04_row8_col5" class="data row8 col5" >0.9516</td>
+      <td id="T_47d04_row8_col6" class="data row8 col6" >0.8969</td>
+      <td id="T_47d04_row8_col7" class="data row8 col7" >0.8973</td>
+      <td id="T_47d04_row8_col8" class="data row8 col8" >0.0190</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row9" class="row_heading level0 row9" >dt</th>
+      <td id="T_47d04_row9_col0" class="data row9 col0" >Decision Tree Classifier</td>
+      <td id="T_47d04_row9_col1" class="data row9 col1" >0.9541</td>
+      <td id="T_47d04_row9_col2" class="data row9 col2" >0.9538</td>
+      <td id="T_47d04_row9_col3" class="data row9 col3" >0.9540</td>
+      <td id="T_47d04_row9_col4" class="data row9 col4" >0.9592</td>
+      <td id="T_47d04_row9_col5" class="data row9 col5" >0.9563</td>
+      <td id="T_47d04_row9_col6" class="data row9 col6" >0.9079</td>
+      <td id="T_47d04_row9_col7" class="data row9 col7" >0.9086</td>
+      <td id="T_47d04_row9_col8" class="data row9 col8" >0.0200</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row10" class="row_heading level0 row10" >qda</th>
+      <td id="T_47d04_row10_col0" class="data row10 col0" >Quadratic Discriminant Analysis</td>
+      <td id="T_47d04_row10_col1" class="data row10 col1" >0.5479</td>
+      <td id="T_47d04_row10_col2" class="data row10 col2" >0.5429</td>
+      <td id="T_47d04_row10_col3" class="data row10 col3" >0.6287</td>
+      <td id="T_47d04_row10_col4" class="data row10 col4" >0.5773</td>
+      <td id="T_47d04_row10_col5" class="data row10 col5" >0.5550</td>
+      <td id="T_47d04_row10_col6" class="data row10 col6" >0.0865</td>
+      <td id="T_47d04_row10_col7" class="data row10 col7" >0.0745</td>
+      <td id="T_47d04_row10_col8" class="data row10 col8" >0.0230</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row11" class="row_heading level0 row11" >dummy</th>
+      <td id="T_47d04_row11_col0" class="data row11 col0" >Dummy Classifier</td>
+      <td id="T_47d04_row11_col1" class="data row11 col1" >0.5262</td>
+      <td id="T_47d04_row11_col2" class="data row11 col2" >0.5000</td>
+      <td id="T_47d04_row11_col3" class="data row11 col3" >1.0000</td>
+      <td id="T_47d04_row11_col4" class="data row11 col4" >0.5262</td>
+      <td id="T_47d04_row11_col5" class="data row11 col5" >0.6894</td>
+      <td id="T_47d04_row11_col6" class="data row11 col6" >0.0000</td>
+      <td id="T_47d04_row11_col7" class="data row11 col7" >0.0000</td>
+      <td id="T_47d04_row11_col8" class="data row11 col8" >0.0150</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row12" class="row_heading level0 row12" >svm</th>
+      <td id="T_47d04_row12_col0" class="data row12 col0" >SVM - Linear Kernel</td>
+      <td id="T_47d04_row12_col1" class="data row12 col1" >0.9404</td>
+      <td id="T_47d04_row12_col2" class="data row12 col2" >0.0000</td>
+      <td id="T_47d04_row12_col3" class="data row12 col3" >0.9382</td>
+      <td id="T_47d04_row12_col4" class="data row12 col4" >0.9491</td>
+      <td id="T_47d04_row12_col5" class="data row12 col5" >0.9429</td>
+      <td id="T_47d04_row12_col6" class="data row12 col6" >0.8805</td>
+      <td id="T_47d04_row12_col7" class="data row12 col7" >0.8821</td>
+      <td id="T_47d04_row12_col8" class="data row12 col8" >0.0250</td>
+    </tr>
+    <tr>
+      <th id="T_47d04_level0_row13" class="row_heading level0 row13" >ridge</th>
+      <td id="T_47d04_row13_col0" class="data row13 col0" >Ridge Classifier</td>
+      <td id="T_47d04_row13_col1" class="data row13 col1" >0.9476</td>
+      <td id="T_47d04_row13_col2" class="data row13 col2" >0.0000</td>
+      <td id="T_47d04_row13_col3" class="data row13 col3" >0.9477</td>
+      <td id="T_47d04_row13_col4" class="data row13 col4" >0.9529</td>
+      <td id="T_47d04_row13_col5" class="data row13 col5" >0.9501</td>
+      <td id="T_47d04_row13_col6" class="data row13 col6" >0.8949</td>
+      <td id="T_47d04_row13_col7" class="data row13 col7" >0.8953</td>
+      <td id="T_47d04_row13_col8" class="data row13 col8" >0.0180</td>
     </tr>
   </tbody>
 </table>
@@ -1803,7 +1911,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i, optimize=&#39;AUC&#39;, n_iter=25) for i in top3]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_top3</span> <span class="o">=</span> <span class="p">[</span><span class="n">tune_model</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span> <span class="n">n_iter</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top3</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1963,22 +2071,22 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#blender = blend_models(tuned_top3)
-#stacker = stack_models(tuned_top3) 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#blender = blend_models(tuned_top3)</span>
+<span class="c1">#stacker = stack_models(tuned_top3) </span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;AUC&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span> <span class="o">=</span> <span class="n">automl</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span>
 </pre></div>
 </div>
 </div>
@@ -1991,14 +2099,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;patient_id&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;patient_id&#39;)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;auc&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;auc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2008,7 +2116,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;confusion_matrix&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;confusion_matrix&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2018,10 +2126,10 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    plot_model(best_model, plot = &#39;feature_all&#39;)
-except:
-    print(&#39;Feature importance not available for this model&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;feature_all&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Feature importance not available for this model&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2035,8 +2143,8 @@ except:
 <h3>Evaluation on the test data<a class="headerlink" href="#evaluation-on-the-test-data" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>final_best_model = finalize_model(best_model)
-predictions = predict_model(final_best_model, data = test, round = 3, verbose = True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">final_best_model</span> <span class="o">=</span> <span class="n">finalize_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">final_best_model</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span> <span class="nb">round</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2075,11 +2183,11 @@ predictions = predict_model(final_best_model, data = test, round = 3, verbose = 
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;classification report&quot;)
-print(classification_report(predictions[target], predictions[&#39;Label&#39;]))
-# Format the confusion matrix to be more readable 
-cm = confusion_matrix(predictions[target], predictions[&#39;Label&#39;])
-pd.DataFrame(cm, columns=[f&#39;Predicted {i}&#39; for i in range(cm.shape[0])], index=[f&#39;Actual {i}&#39; for i in range(cm.shape[1])])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classification report&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]))</span>
+<span class="c1"># Format the confusion matrix to be more readable </span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Predicted </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Actual </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
 </pre></div>
 </div>
 </div>
@@ -2139,19 +2247,19 @@ weighted avg       0.84      0.83      0.83       253
 <p>Predicting the DWI/ADC PI-RADS score (0-5) based on the DWI and ADC radiomic features</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_dwi&#39;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;lesion_dwi&#39;</span>
 
-radiomic_dwi = hbv_features.merge(adc_features, on=idx_cols, how=&#39;left&#39;, suffixes=(&#39;_hbv&#39;, &#39;_adc&#39;))
+<span class="n">radiomic_dwi</span> <span class="o">=</span> <span class="n">hbv_features</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">adc_features</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;_hbv&#39;</span><span class="p">,</span> <span class="s1">&#39;_adc&#39;</span><span class="p">))</span>
 
-train = prepare_input(train_metadata, radiomic_dwi, target)
-test = prepare_input(test_metadata, radiomic_dwi, target)
+<span class="n">train</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">,</span> <span class="n">radiomic_dwi</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">,</span> <span class="n">radiomic_dwi</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>train.columns
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train</span><span class="o">.</span><span class="n">columns</span>
 </pre></div>
 </div>
 </div>
@@ -2216,7 +2324,7 @@ test = prepare_input(test_metadata, radiomic_dwi, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clfs = setup_pycaret(train, target)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clfs</span> <span class="o">=</span> <span class="n">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2541,9 +2649,9 @@ test = prepare_input(test_metadata, radiomic_dwi, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Removed features:\n\t&#39;, &#39;, &#39;.join(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Removed features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 
-print(&#39;\n\nSelected features:\n\t&#39;, &#39;, &#39;.join(set(get_config(&#39;X_train&#39;).columns)))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Selected features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -2561,7 +2669,7 @@ Selected features:
 <p>Select models</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3, sort=&#39;Accuracy&#39;, include=considered_models)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top3</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">n_select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">considered_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2657,7 +2765,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i) for i in top3]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_top3</span> <span class="o">=</span> <span class="p">[</span><span class="n">tune_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top3</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -2817,14 +2925,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;Accuracy&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span> <span class="o">=</span> <span class="n">automl</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span>
 </pre></div>
 </div>
 </div>
@@ -2838,14 +2946,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;confusion_matrix&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;confusion_matrix&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2855,10 +2963,10 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    plot_model(best_model, plot = &#39;feature_all&#39;)
-except:
-    print(&#39;Feature importance not available for this model&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;feature_all&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Feature importance not available for this model&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2870,8 +2978,8 @@ except:
 <h3>Evaluation on the test data<a class="headerlink" href="#id1" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>final_best_model = finalize_model(best_model)
-predictions = predict_model(final_best_model, data = test, round = 3, verbose = True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">final_best_model</span> <span class="o">=</span> <span class="n">finalize_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">final_best_model</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span> <span class="nb">round</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -2910,11 +3018,11 @@ predictions = predict_model(final_best_model, data = test, round = 3, verbose = 
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;classification report&quot;)
-print(classification_report(predictions[target], predictions[&#39;Label&#39;]))
-# Format the confusion matrix to be more readable 
-cm = confusion_matrix(predictions[target], predictions[&#39;Label&#39;])
-pd.DataFrame(cm, columns=[f&#39;Predicted {i}&#39; for i in range(cm.shape[0])], index=[f&#39;Actual {i}&#39; for i in range(cm.shape[1])])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classification report&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]))</span>
+<span class="c1"># Format the confusion matrix to be more readable </span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Predicted </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Actual </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
 </pre></div>
 </div>
 </div>
@@ -3012,17 +3120,17 @@ weighted avg       0.67      0.77      0.71       284
 <h3>PZ<a class="headerlink" href="#pz" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_t2w_pz&#39;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;lesion_t2w_pz&#39;</span>
 
-train = prepare_input(train_metadata, t2w_features, target)
-test = prepare_input(test_metadata, t2w_features, target)
+<span class="n">train</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">,</span> <span class="n">t2w_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">,</span> <span class="n">t2w_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clfs = setup_pycaret(train, target)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clfs</span> <span class="o">=</span> <span class="n">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3347,9 +3455,9 @@ test = prepare_input(test_metadata, t2w_features, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Removed features:\n\t&#39;, &#39;, &#39;.join(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Removed features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 
-print(&#39;\n\nSelected features:\n\t&#39;, &#39;, &#39;.join(set(get_config(&#39;X_train&#39;).columns)))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Selected features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -3366,7 +3474,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3,  sort=&#39;Accuracy&#39;, include=considered_models)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top3</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">n_select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">considered_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3474,7 +3582,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i) for i in top3]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_top3</span> <span class="o">=</span> <span class="p">[</span><span class="n">tune_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top3</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -3634,14 +3742,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;Accuracy&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span> <span class="o">=</span> <span class="n">automl</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span>
 </pre></div>
 </div>
 </div>
@@ -3655,14 +3763,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;confusion_matrix&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;confusion_matrix&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3672,10 +3780,10 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    plot_model(best_model, plot = &#39;feature_all&#39;)
-except:
-    print(&#39;Feature importance not available for this model&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;feature_all&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Feature importance not available for this model&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3688,8 +3796,8 @@ except:
 <h3>Evaluation on the test data<a class="headerlink" href="#id2" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>final_best_model = finalize_model(best_model)
-predictions = predict_model(final_best_model, data = test, round = 3, verbose = True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">final_best_model</span> <span class="o">=</span> <span class="n">finalize_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">final_best_model</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span> <span class="nb">round</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -3728,11 +3836,11 @@ predictions = predict_model(final_best_model, data = test, round = 3, verbose = 
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;classification report&quot;)
-print(classification_report(predictions[target], predictions[&#39;Label&#39;]))
-# Format the confusion matrix to be more readable 
-cm = confusion_matrix(predictions[target], predictions[&#39;Label&#39;])
-pd.DataFrame(cm, columns=[f&#39;Predicted {i}&#39; for i in range(cm.shape[0])], index=[f&#39;Actual {i}&#39; for i in range(cm.shape[1])])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classification report&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]))</span>
+<span class="c1"># Format the confusion matrix to be more readable </span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Predicted </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Actual </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
 </pre></div>
 </div>
 </div>
@@ -3826,17 +3934,17 @@ weighted avg       0.55      0.58      0.55       147
 <h3>TZ<a class="headerlink" href="#tz" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;lesion_t2w_tz&#39;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;lesion_t2w_tz&#39;</span>
 
-train = prepare_input(train_metadata, t2w_features, target)
-test = prepare_input(test_metadata, t2w_features, target)
+<span class="n">train</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">,</span> <span class="n">t2w_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">,</span> <span class="n">t2w_features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clfs = setup_pycaret(train, target)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clfs</span> <span class="o">=</span> <span class="n">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4161,9 +4269,9 @@ test = prepare_input(test_metadata, t2w_features, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Removed features:\n\t&#39;, &#39;, &#39;.join(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Removed features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 
-print(&#39;\n\nSelected features:\n\t&#39;, &#39;, &#39;.join(set(get_config(&#39;X_train&#39;).columns)))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Selected features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -4180,7 +4288,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3, sort=&#39;Accuracy&#39;, include=considered_models)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top3</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">n_select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">considered_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4288,7 +4396,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i) for i in top3]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_top3</span> <span class="o">=</span> <span class="p">[</span><span class="n">tune_model</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top3</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -4448,14 +4556,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;Accuracy&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span> <span class="o">=</span> <span class="n">automl</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span>
 </pre></div>
 </div>
 </div>
@@ -4471,14 +4579,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;confusion_matrix&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;confusion_matrix&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4488,7 +4596,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;feature_all&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;feature_all&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4501,8 +4609,8 @@ Selected features:
 <h3>Evaluation on the test data<a class="headerlink" href="#id3" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>final_best_model = finalize_model(best_model)
-predictions = predict_model(final_best_model, data = test, round = 3, verbose = True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">final_best_model</span> <span class="o">=</span> <span class="n">finalize_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">final_best_model</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span> <span class="nb">round</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4541,11 +4649,11 @@ predictions = predict_model(final_best_model, data = test, round = 3, verbose = 
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;classification report&quot;)
-print(classification_report(predictions[target], predictions[&#39;Label&#39;]))
-# Format the confusion matrix to be more readable 
-cm = confusion_matrix(predictions[target], predictions[&#39;Label&#39;])
-pd.DataFrame(cm, columns=[f&#39;Predicted {i}&#39; for i in range(cm.shape[0])], index=[f&#39;Actual {i}&#39; for i in range(cm.shape[1])])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classification report&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]))</span>
+<span class="c1"># Format the confusion matrix to be more readable </span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Predicted </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Actual </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
 </pre></div>
 </div>
 </div>
@@ -4640,21 +4748,21 @@ weighted avg       0.56      0.58      0.51       111
 <h2>Clinical Significance<a class="headerlink" href="#clinical-significance" title="Permalink to this headline">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>target = &#39;TBx&#39;
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">target</span> <span class="o">=</span> <span class="s1">&#39;TBx&#39;</span>
 
-features = pd.merge(adc_features, hbv_features, on=idx_cols, how=&#39;inner&#39;)
-features = pd.merge(features, t2w_features, on=idx_cols, how=&#39;outer&#39;)
-features = pd.merge(features, dce_features, on=idx_cols, how=&#39;outer&#39;)
+<span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">adc_features</span><span class="p">,</span> <span class="n">hbv_features</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;inner&#39;</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">t2w_features</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dce_features</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
 
-train = prepare_input(train_metadata, features, target)
-test = prepare_input(test_metadata, features, target)
+<span class="n">train</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">train_metadata</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">prepare_input</span><span class="p">(</span><span class="n">test_metadata</span><span class="p">,</span> <span class="n">features</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>clfs = setup_pycaret(train, target)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">clfs</span> <span class="o">=</span> <span class="n">setup_pycaret</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -4979,9 +5087,9 @@ test = prepare_input(test_metadata, features, target)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&#39;Removed features:\n\t&#39;, &#39;, &#39;.join(set(train.columns)-set(get_config(&#39;X_train&#39;).columns)))
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Removed features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 
-print(&#39;\n\nSelected features:\n\t&#39;, &#39;, &#39;.join(set(get_config(&#39;X_train&#39;).columns)))
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Selected features:</span><span class="se">\n\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">get_config</span><span class="p">(</span><span class="s1">&#39;X_train&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span><span class="p">)))</span>
 </pre></div>
 </div>
 </div>
@@ -4998,7 +5106,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>top3 = compare_models(n_select=3, sort=&#39;AUC&#39;, include=considered_models)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">top3</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="n">n_select</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">considered_models</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5106,7 +5214,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>tuned_top3 = [tune_model(i, optimize=&#39;AUC&#39;) for i in top3]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tuned_top3</span> <span class="o">=</span> <span class="p">[</span><span class="n">tune_model</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top3</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -5266,14 +5374,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model = automl(optimize=&#39;AUC&#39;, use_holdout=True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span> <span class="o">=</span> <span class="n">automl</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="s1">&#39;AUC&#39;</span><span class="p">,</span> <span class="n">use_holdout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>best_model
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">best_model</span>
 </pre></div>
 </div>
 </div>
@@ -5289,14 +5397,14 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#plot_model(best_model, plot = &#39;learning&#39;, groups=&#39;fold_group&#39;)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;auc&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;auc&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5306,7 +5414,7 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>plot_model(best_model, plot = &#39;confusion_matrix&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;confusion_matrix&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5316,10 +5424,10 @@ Selected features:
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>try:
-    plot_model(best_model, plot = &#39;feature_all&#39;)
-except:
-    print(&#39;Feature importance not available for this model&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">plot_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">,</span> <span class="n">plot</span> <span class="o">=</span> <span class="s1">&#39;feature_all&#39;</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Feature importance not available for this model&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5331,8 +5439,8 @@ except:
 <h3>Evaluation on the test data<a class="headerlink" href="#id4" title="Permalink to this headline">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>final_best_model = finalize_model(best_model)
-predictions = predict_model(final_best_model, data = test, round = 3, verbose = True)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">final_best_model</span> <span class="o">=</span> <span class="n">finalize_model</span><span class="p">(</span><span class="n">best_model</span><span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">predict_model</span><span class="p">(</span><span class="n">final_best_model</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span> <span class="nb">round</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -5371,11 +5479,11 @@ predictions = predict_model(final_best_model, data = test, round = 3, verbose = 
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>print(&quot;classification report&quot;)
-print(classification_report(predictions[target], predictions[&#39;Label&#39;]))
-# Format the confusion matrix to be more readable 
-cm = confusion_matrix(predictions[target], predictions[&#39;Label&#39;])
-pd.DataFrame(cm, columns=[f&#39;Predicted {i}&#39; for i in range(cm.shape[0])], index=[f&#39;Actual {i}&#39; for i in range(cm.shape[1])])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;classification report&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">]))</span>
+<span class="c1"># Format the confusion matrix to be more readable </span>
+<span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="n">target</span><span class="p">],</span> <span class="n">predictions</span><span class="p">[</span><span class="s1">&#39;Label&#39;</span><span class="p">])</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Predicted </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Actual </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
 </pre></div>
 </div>
 </div>

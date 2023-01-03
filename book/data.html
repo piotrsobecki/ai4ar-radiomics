@@ -493,35 +493,35 @@ title="Print to PDF"
 <p>Let’s begin by importing the necessary libraries and loading the data.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>#!pip install --upgrade -e git+https://github.com/piotrsobecki/ai4ar-helper.git#egg=ai4ar
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="ch">#!pip install --upgrade -e git+https://github.com/piotrsobecki/ai4ar-helper.git#egg=ai4ar</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Setup the notebook
-%load_ext autoreload
-%autoreload 2
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Setup the notebook</span>
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-# Add src to path
-import sys 
-import os 
+<span class="c1"># Add src to path</span>
+<span class="kn">import</span> <span class="nn">sys</span> 
+<span class="kn">import</span> <span class="nn">os</span> 
 
-if os.path.basename(os.getcwd()) != &#39;ai4ar-radiomics&#39;:
-    os.chdir(&#39;..&#39;)
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span> <span class="o">!=</span> <span class="s1">&#39;ai4ar-radiomics&#39;</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
 
-if &#39;src&#39; not in sys.path:
-    sys.path.append(&#39;src&#39;)
+<span class="k">if</span> <span class="s1">&#39;src&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span>
 
 
-from config import config # For reading the config files
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">config</span> <span class="c1"># For reading the config files</span>
 
-cfg = config(
-    (&#39;json&#39;, &#39;config/config.json&#39;, True),
-    (&#39;json&#39;, &#39;config/config-ext.json&#39;, True),
-    ignore_missing_paths = True
-)
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config-ext.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="n">ignore_missing_paths</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -537,7 +537,7 @@ cfg = config(
 <h1>AI4AR Helper package<a class="headerlink" href="#ai4ar-helper-package" title="Permalink to this headline">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ai4ar</span>
 </pre></div>
 </div>
 </div>
@@ -547,14 +547,14 @@ cfg = config(
 <p>On DataSet init, the images are not loaded</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset = ai4ar.Dataset(cfg[&#39;data_dir&#39;])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset.case_ids
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">case_ids</span>
 </pre></div>
 </div>
 </div>
@@ -1068,8 +1068,8 @@ cfg = config(
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case = dataset[&#39;001&#39;]
-case.images_keys() # All images for the case
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">case</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;001&#39;</span><span class="p">]</span>
+<span class="k">case</span><span class="o">.</span><span class="n">images_keys</span><span class="p">()</span> <span class="c1"># All images for the case</span>
 </pre></div>
 </div>
 </div>
@@ -1113,36 +1113,36 @@ case.images_keys() # All images for the case
 <p>Images are cached after first access</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-# T2W image
-t2w_img = case.image(&#39;data/t2w&#39;) 
-# Combined lesion annotations
-combined_t2w_mask_img = case.image(&#39;lesion_labels/lesion1/t2w&#39;, combine=True, cache=False, combine_pp = ai4ar.required_agreement(1)) 
+<span class="c1"># T2W image</span>
+<span class="n">t2w_img</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s1">&#39;data/t2w&#39;</span><span class="p">)</span> 
+<span class="c1"># Combined lesion annotations</span>
+<span class="n">combined_t2w_mask_img</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s1">&#39;lesion_labels/lesion1/t2w&#39;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">combine_pp</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">required_agreement</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> 
 
-t2w = t2w_img.arr()
-combined_t2w_mask = combined_t2w_mask_img.arr()
+<span class="n">t2w</span> <span class="o">=</span> <span class="n">t2w_img</span><span class="o">.</span><span class="n">arr</span><span class="p">()</span>
+<span class="n">combined_t2w_mask</span> <span class="o">=</span> <span class="n">combined_t2w_mask_img</span><span class="o">.</span><span class="n">arr</span><span class="p">()</span>
 
-# Select the max slice (biggest mask)
-slice = ai4ar.select_slice(combined_t2w_mask)
+<span class="c1"># Select the max slice (biggest mask)</span>
+<span class="nb">slice</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">select_slice</span><span class="p">(</span><span class="n">combined_t2w_mask</span><span class="p">)</span>
 
-# Show the combined mask on top of the image and the original image on left 
-fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-ax[0].imshow(t2w[slice], cmap=&#39;gray&#39;)
-ax[1].imshow(t2w[slice], cmap=&#39;gray&#39;)
+<span class="c1"># Show the combined mask on top of the image and the original image on left </span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">t2w</span><span class="p">[</span><span class="nb">slice</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">t2w</span><span class="p">[</span><span class="nb">slice</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 
-# Show the combined mask on top of the image and the original image on left 
-# The mask is shown in red and the image in grayscale, with the mask being semi-transparent but the 0 values are not shown and do not affect the underlying image
-ax[1].imshow(combined_t2w_mask[slice], cmap=&#39;jet&#39;, alpha=0.5, interpolation=&#39;none&#39;, aspect=&#39;auto&#39;)
+<span class="c1"># Show the combined mask on top of the image and the original image on left </span>
+<span class="c1"># The mask is shown in red and the image in grayscale, with the mask being semi-transparent but the 0 values are not shown and do not affect the underlying image</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">combined_t2w_mask</span><span class="p">[</span><span class="nb">slice</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
 
-# ax[1].imshow(combined_t2w_mask[slice], cmap=&#39;jet&#39;, alpha=0.5)
+<span class="c1"># ax[1].imshow(combined_t2w_mask[slice], cmap=&#39;jet&#39;, alpha=0.5)</span>
 
-# Hide the axis labels
-ax[0].axis(&#39;off&#39;)
-ax[1].axis(&#39;off&#39;)
+<span class="c1"># Hide the axis labels</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
 
-fig.tight_layout()
-fig.show()
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -1159,12 +1159,12 @@ fig.show()
 <p>Sum all annotations for lesion1 on t2w image. It’s the same for other modalities</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import matplotlib.pyplot as plt
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-combined_t2w_mask = case.image(&#39;lesion_labels/lesion1/t2w&#39;, combine=True)
-combined_t2w_mask = combined_t2w_mask.arr()
-# Visualize the combined mask (select_slice is a helper function to select the slice with the most mask)
-plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;gray&#39;)
+<span class="n">combined_t2w_mask</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="s1">&#39;lesion_labels/lesion1/t2w&#39;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">combined_t2w_mask</span> <span class="o">=</span> <span class="n">combined_t2w_mask</span><span class="o">.</span><span class="n">arr</span><span class="p">()</span>
+<span class="c1"># Visualize the combined mask (select_slice is a helper function to select the slice with the most mask)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">combined_t2w_mask</span><span class="p">[</span><span class="n">ai4ar</span><span class="o">.</span><span class="n">select_slice</span><span class="p">(</span><span class="n">combined_t2w_mask</span><span class="p">)],</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1178,7 +1178,7 @@ plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;g
 <p>Now it’s cached</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case.visualize(&#39;combined/&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="s1">&#39;combined/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1191,7 +1191,7 @@ plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;g
 <h1>Visualize all images<a class="headerlink" href="#visualize-all-images" title="Permalink to this headline">#</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case.visualize(&#39;anatomical_labels/&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="s1">&#39;anatomical_labels/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1201,7 +1201,7 @@ plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;g
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case.visualize(&#39;data/&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="s1">&#39;data/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1211,7 +1211,7 @@ plt.imshow(combined_t2w_mask[ai4ar.select_slice(combined_t2w_mask)], cmap=&#39;g
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>case.visualize(&#39;lesion_labels/&#39;)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">case</span><span class="o">.</span><span class="n">visualize</span><span class="p">(</span><span class="s1">&#39;lesion_labels/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

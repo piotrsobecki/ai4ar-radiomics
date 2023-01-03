@@ -466,38 +466,38 @@ title="Print to PDF"
 <p>Now, let’s get started by setting up our environment and importing the necessary libraries.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import sys 
-import os 
-from config import config # For reading the config files
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span> 
+<span class="kn">import</span> <span class="nn">os</span> 
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">config</span> <span class="c1"># For reading the config files</span>
 
-# Setup the notebook
-%load_ext autoreload
-%autoreload 2
+<span class="c1"># Setup the notebook</span>
+<span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 
-# Add src to path
+<span class="c1"># Add src to path</span>
 
-if os.path.basename(os.getcwd()) != &#39;ai4ar-radiomics&#39;:
-    os.chdir(&#39;..&#39;)
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span> <span class="o">!=</span> <span class="s1">&#39;ai4ar-radiomics&#39;</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">)</span>
 
-if &#39;src&#39; not in sys.path:
-    sys.path.append(&#39;src&#39;)
+<span class="k">if</span> <span class="s1">&#39;src&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span>
 
-cfg = config(
-    (&#39;json&#39;, &#39;config/config.json&#39;, True),
-    (&#39;json&#39;, &#39;config/config-ext.json&#39;, True), 
-    (&#39;json&#39;, &#39;config/radiomics-test.json&#39;, True), 
-    ignore_missing_paths = True
-)
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">config</span><span class="p">(</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/config-ext.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> 
+    <span class="p">(</span><span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="s1">&#39;config/radiomics-test.json&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span> 
+    <span class="n">ignore_missing_paths</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import ai4ar # AI4AR Helper package
-from extractor_utils import construct_feature_extractor, extract # Extractor utils from src folder
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ai4ar</span> <span class="c1"># AI4AR Helper package</span>
+<span class="kn">from</span> <span class="nn">extractor_utils</span> <span class="kn">import</span> <span class="n">construct_feature_extractor</span><span class="p">,</span> <span class="n">extract</span> <span class="c1"># Extractor utils from src folder</span>
 
-import pandas as pd # For saving the features
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> <span class="c1"># For saving the features</span>
 </pre></div>
 </div>
 </div>
@@ -506,15 +506,15 @@ import pandas as pd # For saving the features
 <h2>Dataset initialization<a class="headerlink" href="#dataset-initialization" title="Permalink to this headline">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>dataset = ai4ar.Dataset(cfg[&#39;data_dir&#39;])
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Clinical metadata
-dataset[dataset.case_ids[0]].clinical_metadata()
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clinical metadata</span>
+<span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">case_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">clinical_metadata</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -592,8 +592,8 @@ dataset[dataset.case_ids[0]].clinical_metadata()
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Radiological metadata
-dataset[dataset.case_ids[0]].radiological_metadata()
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Radiological metadata</span>
+<span class="n">dataset</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">case_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -725,13 +725,12 @@ dataset[dataset.case_ids[0]].radiological_metadata()
 <p>Extractors are created based on the config/radiomics-test.json configuration</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-# Possible feature class names =  [&#39;firstorder&#39;, &#39;glcm&#39;, &#39;gldm&#39;, &#39;glrlm&#39;, &#39;glszm&#39;, &#39;ngtdm&#39;, &#39;shape&#39;, &#39;shape2D&#39;]
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Possible feature class names =  [&#39;firstorder&#39;, &#39;glcm&#39;, &#39;gldm&#39;, &#39;glrlm&#39;, &#39;glszm&#39;, &#39;ngtdm&#39;, &#39;shape&#39;, &#39;shape2D&#39;]</span>
 
-extractors = {}
+<span class="n">extractors</span> <span class="o">=</span> <span class="p">{}</span>
 
-for modality in cfg[&#39;radiomics.settings.extractor&#39;].keys():
-    extractors[modality] = construct_feature_extractor(cfg[&#39;radiomics.settings.extractor&#39;][modality])
+<span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;radiomics.settings.extractor&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">extractors</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="o">=</span> <span class="n">construct_feature_extractor</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;radiomics.settings.extractor&#39;</span><span class="p">][</span><span class="n">modality</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -742,25 +741,24 @@ for modality in cfg[&#39;radiomics.settings.extractor&#39;].keys():
 <p>Create the jobs (copies of radiological_metadata dataframe) with info about proper mask and image paths</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-jobs_dfs = {}
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">jobs_dfs</span> <span class="o">=</span> <span class="p">{}</span>
 
-# Create jobs for modalities in the dataset with proper extractor and store them in a dictionary of dataframes
-for modality in extractors.keys():    
-    # Create a dataframe with the jobs for this modality
-    jobs_dfs[modality] = dataset.radiological_metadata[[&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;, &#39;label_&#39;+modality]].copy()
-    # Rename the label column to mask_path 
-    jobs_dfs[modality].rename(columns={&#39;label_&#39;+modality: &#39;mask_path&#39;}, inplace=True)
-    # Add the data path column
-    jobs_dfs[modality][&#39;data_path&#39;] = &#39;data/&#39;+modality
+<span class="c1"># Create jobs for modalities in the dataset with proper extractor and store them in a dictionary of dataframes</span>
+<span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">extractors</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>    
+    <span class="c1"># Create a dataframe with the jobs for this modality</span>
+    <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">radiological_metadata</span><span class="p">[[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="s1">&#39;lesion_id&#39;</span><span class="p">,</span> <span class="s1">&#39;radiologist_id&#39;</span><span class="p">,</span> <span class="s1">&#39;label_&#39;</span><span class="o">+</span><span class="n">modality</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># Rename the label column to mask_path </span>
+    <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;label_&#39;</span><span class="o">+</span><span class="n">modality</span><span class="p">:</span> <span class="s1">&#39;mask_path&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Add the data path column</span>
+    <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">][</span><span class="s1">&#39;data_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;data/&#39;</span><span class="o">+</span><span class="n">modality</span>
     
-    # Drop rows with no mask
-    jobs_dfs[modality].dropna(subset=[&#39;mask_path&#39;], inplace=True)
+    <span class="c1"># Drop rows with no mask</span>
+    <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mask_path&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
-    # If dataset is empty, remove it
-    if jobs_dfs[modality].empty:
-        del jobs_dfs[modality]
-        continue
+    <span class="c1"># If dataset is empty, remove it</span>
+    <span class="k">if</span> <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">jobs_dfs</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span>
+        <span class="k">continue</span>
 </pre></div>
 </div>
 </div>
@@ -768,25 +766,25 @@ for modality in extractors.keys():
 <p>Extract the features and dump the results for each modality to the tmp dir</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span># Target directory for the features
-floc_dir = os.path.join(&#39;.&#39;, dataset.tmp_dir)
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Target directory for the features</span>
+<span class="n">floc_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">)</span>
 
-for modality, jobs_df in jobs_dfs.items():
-    floc = os.path.join(floc_dir, f&#39;radiomics_{modality}.csv&#39;)
+<span class="k">for</span> <span class="n">modality</span><span class="p">,</span> <span class="n">jobs_df</span> <span class="ow">in</span> <span class="n">jobs_dfs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">floc</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">floc_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;radiomics_</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">.csv&#39;</span><span class="p">)</span>
     
-    if not os.path.exists(floc):
-        print(f&#39;Extracting features for {modality}&#39;)
-        features = extract(dataset, extractors[modality], jobs_df, n_jobs=4)
-        print(f&#39;Features for {modality} extracted, saving&#39;)
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">floc</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Extracting features for </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">extract</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">extractors</span><span class="p">[</span><span class="n">modality</span><span class="p">],</span> <span class="n">jobs_df</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Features for </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1"> extracted, saving&#39;</span><span class="p">)</span>
         
-        # Save the not none features
-        pd.DataFrame([f for f in features if f is not None]).to_csv(floc, index=False)
+        <span class="c1"># Save the not none features</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">floc</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         
-        # Report the number of cases with no features
-        print(&#39;Failed features&#39;)
-        print(jobs_df.loc[[f is None for f in features]][[&#39;patient_id&#39;, &#39;lesion_id&#39;, &#39;radiologist_id&#39;]])
-    else:
-        print(f&#39;Features for {modality} already extracted, skipping&#39;)
+        <span class="c1"># Report the number of cases with no features</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed features&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">jobs_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="n">f</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">]][[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="s1">&#39;lesion_id&#39;</span><span class="p">,</span> <span class="s1">&#39;radiologist_id&#39;</span><span class="p">]])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Features for </span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1"> already extracted, skipping&#39;</span><span class="p">)</span>
         
 </pre></div>
 </div>
@@ -802,11 +800,11 @@ Features for dce3 already extracted, skipping
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import pandas as pd
-# Visualize features 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="c1"># Visualize features </span>
 
 
-pd.read_csv(os.path.join(dataset.tmp_dir, &#39;radiomics_t2w.csv&#39;)).head()
+<span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">tmp_dir</span><span class="p">,</span> <span class="s1">&#39;radiomics_t2w.csv&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
