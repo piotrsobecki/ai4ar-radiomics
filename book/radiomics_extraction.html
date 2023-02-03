@@ -494,6 +494,26 @@ title="Print to PDF"
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span> 
+
+<span class="n">merged_rad_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;AI4AR_PCa_radiological.csv&#39;</span><span class="p">)</span>
+<span class="c1"># If does not exist, merge the base and extended datasets</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">merged_rad_f</span><span class="p">):</span>
+    <span class="n">r_base</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;AI4AR_PCa_radiological-base.csv&#39;</span><span class="p">))</span>
+    <span class="n">r_ext</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">],</span> <span class="s1">&#39;AI4AR_PCa_radiological-ext.csv&#39;</span><span class="p">))</span>           
+    <span class="c1"># Join r_base with r_ext on the patient_id, radiologist_id and lesion_id, do not copy the existing columns</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r_base</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">r_ext</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;patient_id&#39;</span><span class="p">,</span> <span class="s1">&#39;radiologist_id&#39;</span><span class="p">,</span> <span class="s1">&#39;lesion_id&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;_ext&#39;</span><span class="p">))</span>
+    <span class="c1"># Drop columns with _ext suffix</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;_ext&#39;</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Save the merged dataset</span>
+    <span class="n">r</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">merged_rad_f</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ai4ar</span> <span class="c1"># AI4AR Helper package</span>
 <span class="kn">from</span> <span class="nn">extractor_utils</span> <span class="kn">import</span> <span class="n">construct_feature_extractor</span><span class="p">,</span> <span class="n">extract</span> <span class="c1"># Extractor utils from src folder</span>
 
@@ -507,6 +527,65 @@ title="Print to PDF"
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="o">~</span>\<span class="n">AppData</span>\<span class="n">Local</span>\<span class="n">Temp</span>\<span class="n">ipykernel_79548</span>\<span class="mf">3117634447.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">ai4ar</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">[</span><span class="s1">&#39;data_dir&#39;</span><span class="p">])</span>
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\src\ai4ar\src\ai4ar\helper.py</span> in <span class="ni">__init__</span><span class="nt">(self, data_dir, tmp_dir)</span>
+<span class="g g-Whitespace">    </span><span class="mi">312</span>         <span class="bp">self</span><span class="o">.</span><span class="n">radiological_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_radiological_metadata</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">313</span>         <span class="c1"># This is the extended radiological metadata with the lesion labels cols (images)</span>
+<span class="ne">--&gt; </span><span class="mi">314</span>         <span class="bp">self</span><span class="o">.</span><span class="n">radiological_metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_radiological_metadata_ext</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">315</span> 
+<span class="g g-Whitespace">    </span><span class="mi">316</span> 
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\src\ai4ar\src\ai4ar\helper.py</span> in <span class="ni">_load_radiological_metadata_ext</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">334</span>         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">r_metadata_ext_floc</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">335</span>             <span class="n">r_metadata_ext</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">r_metadata_ext_floc</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">336</span>             <span class="n">r_metadata</span> <span class="o">=</span> <span class="n">r_metadata</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">r_metadata_ext</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">idx_cols</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span> 
+<span class="g g-Whitespace">    </span><span class="mi">338</span>         <span class="k">else</span> <span class="p">:</span>
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\lib\site-packages\pandas\core\frame.py</span> in <span class="ni">merge</span><span class="nt">(self, right, how, on, left_on, right_on, left_index, right_index, sort, suffixes, copy, indicator, validate)</span>
+<span class="g g-Whitespace">   </span><span class="mi">9201</span>             <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">9202</span>             <span class="n">indicator</span><span class="o">=</span><span class="n">indicator</span><span class="p">,</span>
+<span class="ne">-&gt; </span><span class="mi">9203</span>             <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span>
+<span class="g g-Whitespace">   </span><span class="mi">9204</span>         <span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">9205</span> 
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\lib\site-packages\pandas\core\reshape\merge.py</span> in <span class="ni">merge</span><span class="nt">(left, right, how, on, left_on, right_on, left_index, right_index, sort, suffixes, copy, indicator, validate)</span>
+<span class="g g-Whitespace">    </span><span class="mi">117</span>         <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">118</span>         <span class="n">indicator</span><span class="o">=</span><span class="n">indicator</span><span class="p">,</span>
+<span class="ne">--&gt; </span><span class="mi">119</span>         <span class="n">validate</span><span class="o">=</span><span class="n">validate</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">120</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">121</span>     <span class="k">return</span> <span class="n">op</span><span class="o">.</span><span class="n">get_result</span><span class="p">()</span>
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\lib\site-packages\pandas\core\reshape\merge.py</span> in <span class="ni">__init__</span><span class="nt">(self, left, right, how, on, left_on, right_on, axis, left_index, right_index, sort, suffixes, copy, indicator, validate)</span>
+<span class="g g-Whitespace">    </span><span class="mi">697</span>             <span class="bp">self</span><span class="o">.</span><span class="n">right_join_keys</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">698</span>             <span class="bp">self</span><span class="o">.</span><span class="n">join_names</span><span class="p">,</span>
+<span class="ne">--&gt; </span><span class="mi">699</span>         <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_merge_keys</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">700</span> 
+<span class="g g-Whitespace">    </span><span class="mi">701</span>         <span class="c1"># validate the merge keys dtypes. We may need to coerce</span>
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\lib\site-packages\pandas\core\reshape\merge.py</span> in <span class="ni">_get_merge_keys</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1094</span>                     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_rkey</span><span class="p">(</span><span class="n">rk</span><span class="p">):</span>
+<span class="g g-Whitespace">   </span><span class="mi">1095</span>                         <span class="k">if</span> <span class="n">rk</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1096</span>                             <span class="n">right_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">_get_label_or_level_values</span><span class="p">(</span><span class="n">rk</span><span class="p">))</span>
+<span class="g g-Whitespace">   </span><span class="mi">1097</span>                         <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1098</span>                             <span class="c1"># work-around for merge_asof(right_index=True)</span>
+
+<span class="nn">d:\workspace\ai4ar-radiomics\ai4ar-radiomics-env\lib\site-packages\pandas\core\generic.py</span> in <span class="ni">_get_label_or_level_values</span><span class="nt">(self, key, axis)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1777</span>             <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">_values</span>
+<span class="g g-Whitespace">   </span><span class="mi">1778</span>         <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1779</span>             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1780</span> 
+<span class="g g-Whitespace">   </span><span class="mi">1781</span>         <span class="c1"># Check for duplicates</span>
+
+<span class="ne">KeyError</span>: &#39;patient_id&#39;
 </pre></div>
 </div>
 </div>
