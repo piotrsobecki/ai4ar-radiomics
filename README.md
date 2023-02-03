@@ -125,6 +125,11 @@ The directory structure should reflect following:
 ./data/trial/AI4AR_cont
 
 ./data/trial/AI4A4_PCa_clinical.csv
-./data/trial/AI4AR_PCa_radiological.csv
+./data/trial/AI4AR_PCa_radiological-base.csv
+./data/trial/AI4AR_PCa_radiological-ext.csv
+
+
+
+./data/trial/AI4AR_PCa_radiological.csv (merged base and ext)
 
 
